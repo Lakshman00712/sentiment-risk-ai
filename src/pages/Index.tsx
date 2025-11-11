@@ -1,34 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  TrendingUp, 
-  TrendingDown, 
   AlertCircle, 
   Users, 
   DollarSign,
-  Activity,
   Shield,
-  ArrowUpRight,
-  ArrowDownRight,
   Brain,
-  CheckCircle,
-  Clock
 } from "lucide-react";
 import MetricsCard from "@/components/MetricsCard";
 import ClientsList from "@/components/ClientsList";
 import RiskDistribution from "@/components/RiskDistribution";
 import SentimentAnalysis from "@/components/SentimentAnalysis";
 import DataImport from "@/components/DataImport";
+import LiveDataDialog from "@/components/LiveDataDialog";
+import AdvancedFilters, { FilterOptions } from "@/components/AdvancedFilters";
 import { ClientData, loadSampleData } from "@/utils/csvParser";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [timeRange, setTimeRange] = useState("30d");
   const [clientData, setClientData] = useState<ClientData[]>([]);
+  const [filters, setFilters] = useState<FilterOptions>({
+    search: "",
+    paymentHistory: "all",
+    riskCategory: "all",
+    sentimentMin: -1,
+    sentimentMax: 1,
+    dateFrom: undefined,
+    dateTo: undefined,
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,6 +43,83 @@ const Index = () => {
       });
     });
   }, []);
+
+  // Filter client data based on all filter criteria
+  const filteredData = useMemo(() => {
+    return clientData.filter(client => {
+      // Search filter
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const matchesSearch = 
+          client.name.toLowerCase().includes(searchLower) ||
+          client.email.toLowerCase().includes(searchLower) ||
+          client.phoneNumber.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // Payment history filter
+      if (filters.paymentHistory !== "all" && client.paymentHistory !== filters.paymentHistory) {
+        return false;
+      }
+
+      // Risk category filter
+      if (filters.riskCategory !== "all" && client.riskCategory !== filters.riskCategory) {
+        return false;
+      }
+
+      // Sentiment score range
+      if (client.sentimentScore < filters.sentimentMin || client.sentimentScore > filters.sentimentMax) {
+        return false;
+      }
+
+      // Date range filter
+      if (filters.dateFrom || filters.dateTo) {
+        const paymentDate = new Date(client.lastPaymentDate);
+        if (filters.dateFrom && paymentDate < filters.dateFrom) return false;
+        if (filters.dateTo && paymentDate > filters.dateTo) return false;
+      }
+
+      return true;
+    });
+  }, [clientData, filters]);
+
+  // Calculate metrics from filtered data
+  const metrics = useMemo(() => {
+    const totalAR = filteredData.reduce((sum, client) => sum + client.invoiceAmount, 0);
+    const avgRiskScore = filteredData.length > 0 
+      ? filteredData.reduce((sum, client) => {
+          const riskValue = client.riskCategory === "High" ? 85 : client.riskCategory === "Medium" ? 60 : 35;
+          return sum + riskValue;
+        }, 0) / filteredData.length
+      : 0;
+    const highRiskCount = filteredData.filter(c => c.riskCategory === "High").length;
+
+    return {
+      totalAR: totalAR.toFixed(2),
+      avgRiskScore: avgRiskScore.toFixed(0),
+      highRiskCount,
+      activeClients: filteredData.length
+    };
+  }, [filteredData]);
+
+  const handleExport = () => {
+    const csv = [
+      Object.keys(filteredData[0] || {}).join(','),
+      ...filteredData.map(row => Object.values(row).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `credit_risk_data_${new Date().toISOString()}.csv`;
+    a.click();
+    
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredData.length} records`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,10 +137,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Activity className="h-4 w-4 mr-2" />
-                Live Updates
-              </Button>
+              <LiveDataDialog onDataFetched={setClientData} />
               <Button size="sm" className="bg-gradient-to-r from-primary to-accent">
                 <Brain className="h-4 w-4 mr-2" />
                 Run Analysis
@@ -96,7 +173,7 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricsCard
             title="Total AR Value"
-            value="$2.4M"
+            value={`$${(parseFloat(metrics.totalAR) / 1000).toFixed(1)}K`}
             change={8.2}
             trend="up"
             icon={DollarSign}
@@ -104,7 +181,7 @@ const Index = () => {
           />
           <MetricsCard
             title="Average Risk Score"
-            value="68/100"
+            value={`${metrics.avgRiskScore}/100`}
             change={-5.3}
             trend="down"
             icon={Shield}
@@ -112,7 +189,7 @@ const Index = () => {
           />
           <MetricsCard
             title="High Risk Accounts"
-            value="23"
+            value={metrics.highRiskCount.toString()}
             change={12.5}
             trend="up"
             icon={AlertCircle}
@@ -121,17 +198,28 @@ const Index = () => {
           />
           <MetricsCard
             title="Active Clients"
-            value="347"
+            value={metrics.activeClients.toString()}
             change={3.1}
             trend="up"
             icon={Users}
-            description="With outstanding invoices"
+            description="Filtered records"
           />
         </div>
 
         {/* Data Import */}
         <div className="mb-8">
           <DataImport onDataImported={setClientData} />
+        </div>
+
+        {/* Advanced Filters */}
+        <div className="mb-8">
+          <AdvancedFilters
+            filters={filters}
+            onFiltersChange={setFilters}
+            onExport={handleExport}
+            totalRecords={clientData.length}
+            filteredRecords={filteredData.length}
+          />
         </div>
 
         {/* Main Dashboard Content */}
@@ -209,19 +297,19 @@ const Index = () => {
           </div>
           
           <TabsContent value="all" className="space-y-4">
-            <ClientsList filter="all" clientData={clientData} />
+            <ClientsList filter="all" clientData={filteredData} />
           </TabsContent>
           
           <TabsContent value="high-risk" className="space-y-4">
-            <ClientsList filter="high" clientData={clientData} />
+            <ClientsList filter="high" clientData={filteredData} />
           </TabsContent>
           
           <TabsContent value="medium-risk" className="space-y-4">
-            <ClientsList filter="medium" clientData={clientData} />
+            <ClientsList filter="medium" clientData={filteredData} />
           </TabsContent>
           
           <TabsContent value="low-risk" className="space-y-4">
-            <ClientsList filter="low" clientData={clientData} />
+            <ClientsList filter="low" clientData={filteredData} />
           </TabsContent>
         </Tabs>
       </main>
