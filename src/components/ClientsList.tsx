@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Building2, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ClientData } from "@/utils/csvParser";
 
 interface Client {
   id: string;
@@ -16,58 +17,30 @@ interface Client {
   lastContact: string;
 }
 
-const mockClients: Client[] = [
-  {
-    id: "1",
-    name: "TechCorp Industries",
-    industry: "Technology",
-    riskScore: 89,
-    outstandingBalance: 245000,
-    paymentHistory: 67,
-    sentiment: "negative",
-    lastContact: "2 days ago"
-  },
-  {
-    id: "2",
-    name: "Global Retail Co",
-    industry: "Retail",
-    riskScore: 72,
-    outstandingBalance: 180000,
-    paymentHistory: 78,
-    sentiment: "neutral",
-    lastContact: "5 days ago"
-  },
-  {
-    id: "3",
-    name: "Manufacturing Plus",
-    industry: "Manufacturing",
-    riskScore: 35,
-    outstandingBalance: 92000,
-    paymentHistory: 94,
-    sentiment: "positive",
-    lastContact: "1 day ago"
-  },
-  {
-    id: "4",
-    name: "Healthcare Solutions",
-    industry: "Healthcare",
-    riskScore: 28,
-    outstandingBalance: 156000,
-    paymentHistory: 96,
-    sentiment: "positive",
-    lastContact: "3 days ago"
-  },
-  {
-    id: "5",
-    name: "Energy Dynamics",
-    industry: "Energy",
-    riskScore: 58,
-    outstandingBalance: 310000,
-    paymentHistory: 82,
-    sentiment: "neutral",
-    lastContact: "1 week ago"
-  }
-];
+const convertClientData = (data: ClientData): Client => {
+  // Convert sentiment score to positive/neutral/negative
+  const sentiment = data.sentimentScore > 0.3 ? "positive" : 
+                   data.sentimentScore < -0.3 ? "negative" : "neutral";
+  
+  // Convert behavior score (0-1) to percentage for payment history
+  const paymentHistory = Math.round(data.behaviorScore * 100);
+  
+  // Calculate risk score from risk category and behavior
+  const riskScore = data.riskCategory === "High" ? 70 + Math.random() * 30 :
+                   data.riskCategory === "Medium" ? 40 + Math.random() * 30 :
+                   Math.random() * 40;
+  
+  return {
+    id: data.id,
+    name: data.name,
+    industry: data.industry || "General",
+    riskScore: Math.round(riskScore),
+    outstandingBalance: data.invoiceAmount,
+    paymentHistory,
+    sentiment,
+    lastContact: new Date(data.lastPaymentDate).toLocaleDateString() || "Unknown"
+  };
+};
 
 const getRiskBadge = (score: number) => {
   if (score >= 70) return { label: "High Risk", variant: "destructive" as const };
@@ -88,10 +61,13 @@ const getSentimentIcon = (sentiment: string) => {
 
 interface ClientsListProps {
   filter: "all" | "high" | "medium" | "low";
+  clientData?: ClientData[];
 }
 
-const ClientsList = ({ filter }: ClientsListProps) => {
-  const filteredClients = mockClients.filter(client => {
+const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
+  const clients = clientData.map(convertClientData);
+  
+  const filteredClients = clients.filter(client => {
     if (filter === "all") return true;
     if (filter === "high") return client.riskScore >= 70;
     if (filter === "medium") return client.riskScore >= 40 && client.riskScore < 70;

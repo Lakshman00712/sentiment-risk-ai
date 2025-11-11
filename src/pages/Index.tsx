@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,24 @@ import MetricsCard from "@/components/MetricsCard";
 import ClientsList from "@/components/ClientsList";
 import RiskDistribution from "@/components/RiskDistribution";
 import SentimentAnalysis from "@/components/SentimentAnalysis";
+import DataImport from "@/components/DataImport";
+import { ClientData, loadSampleData } from "@/utils/csvParser";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [timeRange, setTimeRange] = useState("30d");
+  const [clientData, setClientData] = useState<ClientData[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadSampleData().then(data => {
+      setClientData(data);
+      toast({
+        title: "Sample Data Loaded",
+        description: `Loaded ${data.length} client records`,
+      });
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -114,6 +129,11 @@ const Index = () => {
           />
         </div>
 
+        {/* Data Import */}
+        <div className="mb-8">
+          <DataImport onDataImported={setClientData} />
+        </div>
+
         {/* Main Dashboard Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
@@ -189,19 +209,19 @@ const Index = () => {
           </div>
           
           <TabsContent value="all" className="space-y-4">
-            <ClientsList filter="all" />
+            <ClientsList filter="all" clientData={clientData} />
           </TabsContent>
           
           <TabsContent value="high-risk" className="space-y-4">
-            <ClientsList filter="high" />
+            <ClientsList filter="high" clientData={clientData} />
           </TabsContent>
           
           <TabsContent value="medium-risk" className="space-y-4">
-            <ClientsList filter="medium" />
+            <ClientsList filter="medium" clientData={clientData} />
           </TabsContent>
           
           <TabsContent value="low-risk" className="space-y-4">
-            <ClientsList filter="low" />
+            <ClientsList filter="low" clientData={clientData} />
           </TabsContent>
         </Tabs>
       </main>
