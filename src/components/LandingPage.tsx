@@ -26,11 +26,11 @@ const LandingPage = ({ onDataLoaded, onRiskCategoryClick, onAlertClick, sampleDa
               <div className="h-12 w-12 rounded-xl bg-gradient-orange flex items-center justify-center shadow-lg">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-orange bg-clip-text text-transparent">
+              <h1 className="text-4xl font-semibold text-foreground">
                 Credit Risk Insights
               </h1>
             </div>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-normal">
               AI-powered credit risk assessment and accounts receivable analytics
             </p>
           </div>
