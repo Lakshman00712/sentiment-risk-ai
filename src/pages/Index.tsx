@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { LayoutDashboard, Database, Plus } from "lucide-react";
+import { LayoutDashboard, Home, Database } from "lucide-react";
 import LandingPage from "@/components/LandingPage";
 import ChatInterface from "@/components/ChatInterface";
 import RiskDetailDialog from "@/components/RiskDetailDialog";
 import AlertDetailDialog from "@/components/AlertDetailDialog";
 import ERPConnectionDialog from "@/components/ERPConnectionDialog";
-import { ClientData, loadSampleData } from "@/utils/csvParser";
+import DataConnection from "@/components/DataConnection";
+import { ClientData } from "@/utils/csvParser";
 import { useToast } from "@/hooks/use-toast";
 
 // Import all existing dashboard components
@@ -22,11 +23,17 @@ const Index = () => {
   const [alertDetailOpen, setAlertDetailOpen] = useState(false);
   const [selectedAlertClient, setSelectedAlertClient] = useState<ClientData | null>(null);
   const [erpDialogOpen, setErpDialogOpen] = useState(false);
+  const [dataConnectionOpen, setDataConnectionOpen] = useState(false);
   const { toast } = useToast();
 
   const handleDataLoaded = (data: ClientData[]) => {
     setClientData(data);
     setShowDashboard(true);
+    setDataConnectionOpen(false);
+  };
+
+  const handleBackToLanding = () => {
+    setShowDashboard(false);
   };
 
   const handleRiskCategoryClick = (category: string, clients: ClientData[]) => {
@@ -42,7 +49,14 @@ const Index = () => {
 
   // If no data is loaded, show landing page
   if (!showDashboard || clientData.length === 0) {
-    return <LandingPage onDataLoaded={handleDataLoaded} />;
+    return (
+      <LandingPage 
+        onDataLoaded={handleDataLoaded}
+        onRiskCategoryClick={handleRiskCategoryClick}
+        onAlertClick={handleAlertClick}
+        sampleData={clientData}
+      />
+    );
   }
 
   // Main application interface
@@ -70,11 +84,31 @@ const Index = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setErpDialogOpen(true)}
+                onClick={handleBackToLanding}
               >
-                <Database className="h-4 w-4 mr-2" />
-                Connect ERP
+                <Home className="h-4 w-4 mr-2" />
+                Home
               </Button>
+              
+              <Sheet open={dataConnectionOpen} onOpenChange={setDataConnectionOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Database className="h-4 w-4 mr-2" />
+                    Data Connection
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Connect Data Source</SheetTitle>
+                    <SheetDescription>
+                      Add or update your data connection
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <DataConnection onDataLoaded={handleDataLoaded} showAsCard={false} />
+                  </div>
+                </SheetContent>
+              </Sheet>
               
               {/* Modules Access */}
               <Sheet>

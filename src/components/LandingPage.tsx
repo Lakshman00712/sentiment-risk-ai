@@ -1,166 +1,94 @@
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Upload, Database, Link as LinkIcon, AlertCircle, ArrowRight } from "lucide-react";
-import { parseCSV, fetchCSVFromURL, ClientData } from "@/utils/csvParser";
-import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { AlertCircle, LayoutDashboard, BarChart3 } from "lucide-react";
+import { ClientData } from "@/utils/csvParser";
+import DataConnection from "@/components/DataConnection";
+import DashboardModules from "@/components/DashboardModules";
 
 interface LandingPageProps {
   onDataLoaded: (data: ClientData[]) => void;
+  onRiskCategoryClick?: (category: string, clients: ClientData[]) => void;
+  onAlertClick?: (client: ClientData) => void;
+  sampleData?: ClientData[];
 }
 
-const LandingPage = ({ onDataLoaded }: LandingPageProps) => {
-  const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState("");
-  const { toast } = useToast();
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setLoading(true);
-    try {
-      const text = await file.text();
-      const data = parseCSV(text);
-      onDataLoaded(data);
-      toast({
-        title: "Success",
-        description: `Loaded ${data.length} client records`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to parse CSV file",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleURLImport = async () => {
-    if (!url) return;
-
-    setLoading(true);
-    try {
-      const data = await fetchCSVFromURL(url);
-      onDataLoaded(data);
-      toast({
-        title: "Success",
-        description: `Loaded ${data.length} client records from URL`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch data from URL",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  };
+const LandingPage = ({ onDataLoaded, onRiskCategoryClick, onAlertClick, sampleData = [] }: LandingPageProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-orange/5 flex items-center justify-center p-6">
       <div className="w-full max-w-4xl space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-gradient-orange flex items-center justify-center">
-              <BarChart3 className="h-6 w-6 text-white" />
+        {/* Header with Modules Button */}
+        <div className="flex items-center justify-between">
+          <div className="flex-1" />
+          <div className="text-center space-y-4 flex-1">
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-gradient-orange flex items-center justify-center shadow-lg">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-orange bg-clip-text text-transparent">
+                Credit Risk Insights
+              </h1>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-orange bg-clip-text text-transparent">
-              Credit Risk Insights
-            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              AI-powered credit risk assessment and accounts receivable analytics
+            </p>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            AI-powered credit risk assessment and accounts receivable analytics
-          </p>
+          <div className="flex-1 flex justify-end">
+            {sampleData.length > 0 && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button size="lg" className="shadow-lg">
+                    <LayoutDashboard className="h-5 w-5 mr-2" />
+                    Explore Modules
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>Analysis Modules</SheetTitle>
+                    <SheetDescription>
+                      Explore detailed analytics, reports, and insights
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <DashboardModules 
+                      clientData={sampleData}
+                      onRiskCategoryClick={onRiskCategoryClick || (() => {})}
+                      onAlertClick={onAlertClick || (() => {})}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
+          </div>
         </div>
 
-        {/* Data Connection Options */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload CSV */}
-          <Card className="border-2 hover:border-orange transition-colors">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Upload className="h-5 w-5 text-orange" />
-                <CardTitle>Upload CSV File</CardTitle>
-              </div>
-              <CardDescription>
-                Upload your client data file for instant analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="file-upload">Select File</Label>
-                <Input
-                  id="file-upload"
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                  disabled={loading}
-                />
-              </div>
-              <Button 
-                className="w-full" 
-                disabled={loading}
-                onClick={() => document.getElementById('file-upload')?.click()}
-              >
-                {loading ? "Loading..." : "Upload & Analyze"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Connect from URL */}
-          <Card className="border-2 hover:border-orange transition-colors">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <LinkIcon className="h-5 w-5 text-orange" />
-                <CardTitle>Connect from URL</CardTitle>
-              </div>
-              <CardDescription>
-                Link to your data source for live updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="url-input">Data URL</Label>
-                <Input
-                  id="url-input"
-                  type="url"
-                  placeholder="https://example.com/data.csv"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-              <Button 
-                className="w-full" 
-                onClick={handleURLImport}
-                disabled={!url || loading}
-              >
-                {loading ? "Connecting..." : "Connect & Analyze"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Unified Data Connection */}
+        <Card className="border-2 hover:border-orange transition-colors shadow-xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Connect Your Data Source</CardTitle>
+            <CardDescription>
+              Choose from multiple data sources to begin your analysis
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataConnection onDataLoaded={onDataLoaded} />
+          </CardContent>
+        </Card>
 
         {/* File Format Instructions */}
         <Card className="bg-muted/50 border-orange/20">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-orange" />
-              <CardTitle className="text-base">Required CSV Format</CardTitle>
+              <AlertCircle className="h-4 w-4 text-orange" />
+              <CardTitle className="text-sm">Required CSV Format</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">
               Your CSV file should include the following columns:
             </p>
-            <div className="grid sm:grid-cols-2 gap-2 text-sm">
+            <div className="grid sm:grid-cols-2 gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-orange" />
                 <span>CustomerID</span>
@@ -208,8 +136,5 @@ const LandingPage = ({ onDataLoaded }: LandingPageProps) => {
     </div>
   );
 };
-
-// Missing import
-import { BarChart3 } from "lucide-react";
 
 export default LandingPage;
