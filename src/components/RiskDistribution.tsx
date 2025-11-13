@@ -5,9 +5,10 @@ import { useMemo } from "react";
 interface RiskDistributionProps {
   viewMode: "clients" | "value";
   clientData: ClientData[];
+  onCategoryClick?: (category: string, clients: ClientData[]) => void;
 }
 
-const RiskDistribution = ({ viewMode, clientData }: RiskDistributionProps) => {
+const RiskDistribution = ({ viewMode, clientData, onCategoryClick }: RiskDistributionProps) => {
   const data = useMemo(() => {
     const lowRisk = clientData.filter(c => c.riskCategory === "Low");
     const mediumRisk = clientData.filter(c => c.riskCategory === "Medium");
@@ -71,21 +72,30 @@ const RiskDistribution = ({ viewMode, clientData }: RiskDistributionProps) => {
       </ResponsiveContainer>
       
       <div className="grid grid-cols-3 gap-4">
-        {data.map((item) => (
-          <div key={item.name} className="text-center p-4 rounded-lg bg-muted/30">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div 
-                className="h-3 w-3 rounded-full" 
-                style={{ backgroundColor: item.color }}
-              />
-              <p className="text-sm font-medium text-foreground">{item.name}</p>
+        {data.map((item) => {
+          const category = item.name.replace(" Risk", "");
+          const categoryClients = clientData.filter(c => c.riskCategory === category);
+          
+          return (
+            <div 
+              key={item.name} 
+              className="text-center p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+              onClick={() => onCategoryClick?.(category, categoryClients)}
+            >
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div 
+                  className="h-3 w-3 rounded-full" 
+                  style={{ backgroundColor: item.color }}
+                />
+                <p className="text-sm font-medium text-foreground">{item.name}</p>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{formatValue(item.value)}</p>
+              <p className="text-xs text-muted-foreground">
+                {viewMode === "clients" ? "clients" : "AR value"}
+              </p>
             </div>
-            <p className="text-2xl font-bold text-foreground">{formatValue(item.value)}</p>
-            <p className="text-xs text-muted-foreground">
-              {viewMode === "clients" ? "clients" : "AR value"}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
