@@ -1,12 +1,53 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { ClientData } from "@/utils/csvParser";
+import { useMemo } from "react";
 
-const data = [
-  { name: "Low Risk", value: 156, color: "hsl(var(--success))" },
-  { name: "Medium Risk", value: 168, color: "hsl(var(--warning))" },
-  { name: "High Risk", value: 23, color: "hsl(var(--destructive))" },
-];
+interface RiskDistributionProps {
+  viewMode: "clients" | "value";
+  clientData: ClientData[];
+}
 
-const RiskDistribution = () => {
+const RiskDistribution = ({ viewMode, clientData }: RiskDistributionProps) => {
+  const data = useMemo(() => {
+    const lowRisk = clientData.filter(c => c.riskCategory === "Low");
+    const mediumRisk = clientData.filter(c => c.riskCategory === "Medium");
+    const highRisk = clientData.filter(c => c.riskCategory === "High");
+
+    if (viewMode === "clients") {
+      return [
+        { name: "Low Risk", value: lowRisk.length, color: "hsl(var(--success))" },
+        { name: "Medium Risk", value: mediumRisk.length, color: "hsl(var(--warning))" },
+        { name: "High Risk", value: highRisk.length, color: "hsl(var(--destructive))" },
+      ];
+    } else {
+      return [
+        { 
+          name: "Low Risk", 
+          value: lowRisk.reduce((sum, c) => sum + c.invoiceAmount, 0), 
+          color: "hsl(var(--success))" 
+        },
+        { 
+          name: "Medium Risk", 
+          value: mediumRisk.reduce((sum, c) => sum + c.invoiceAmount, 0), 
+          color: "hsl(var(--warning))" 
+        },
+        { 
+          name: "High Risk", 
+          value: highRisk.reduce((sum, c) => sum + c.invoiceAmount, 0), 
+          color: "hsl(var(--destructive))" 
+        },
+      ];
+    }
+  }, [clientData, viewMode]);
+
+  const formatValue = (value: number) => {
+    if (viewMode === "clients") {
+      return value.toString();
+    } else {
+      return `$${(value / 1000).toFixed(1)}K`;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <ResponsiveContainer width="100%" height={300}>
@@ -25,7 +66,7 @@ const RiskDistribution = () => {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip formatter={(value: number) => formatValue(value)} />
         </PieChart>
       </ResponsiveContainer>
       
@@ -39,8 +80,10 @@ const RiskDistribution = () => {
               />
               <p className="text-sm font-medium text-foreground">{item.name}</p>
             </div>
-            <p className="text-2xl font-bold text-foreground">{item.value}</p>
-            <p className="text-xs text-muted-foreground">clients</p>
+            <p className="text-2xl font-bold text-foreground">{formatValue(item.value)}</p>
+            <p className="text-xs text-muted-foreground">
+              {viewMode === "clients" ? "clients" : "AR value"}
+            </p>
           </div>
         ))}
       </div>

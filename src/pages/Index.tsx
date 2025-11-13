@@ -14,6 +14,7 @@ import {
   Database,
   BarChart3,
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import MetricsCard from "@/components/MetricsCard";
 import ClientsList from "@/components/ClientsList";
 import RiskDistribution from "@/components/RiskDistribution";
@@ -27,6 +28,8 @@ import { useToast } from "@/hooks/use-toast";
 const Index = () => {
   const [timeRange, setTimeRange] = useState("30d");
   const [clientData, setClientData] = useState<ClientData[]>([]);
+  const [riskViewMode, setRiskViewMode] = useState<"clients" | "value">("clients");
+  const [alertsLimit, setAlertsLimit] = useState(5);
   const [filters, setFilters] = useState<FilterOptions>({
     search: "",
     paymentHistory: "all",
@@ -165,10 +168,14 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         <Tabs defaultValue="summary" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
             <TabsTrigger value="summary" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Summary
+            </TabsTrigger>
+            <TabsTrigger value="sentiment" className="flex items-center gap-2">
+              <Brain className="h-4 w-4" />
+              AI Sentiment
             </TabsTrigger>
             <TabsTrigger value="data" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
@@ -232,31 +239,29 @@ const Index = () => {
               />
             </div>
 
-            {/* Analysis Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <Card>
-                  <CardHeader>
+            {/* Risk Distribution Analysis */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
                     <CardTitle>Risk Distribution Analysis</CardTitle>
                     <CardDescription>Client portfolio segmented by risk level</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <RiskDistribution />
-                  </CardContent>
-                </Card>
-              </div>
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>AI Sentiment Analysis</CardTitle>
-                    <CardDescription>Communication patterns & behavior</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <SentimentAnalysis />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  </div>
+                  <Select value={riskViewMode} onValueChange={(value: "clients" | "value") => setRiskViewMode(value)}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="clients">Number of Clients</SelectItem>
+                      <SelectItem value="value">AR Value</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <RiskDistribution viewMode={riskViewMode} clientData={filteredData} />
+              </CardContent>
+            </Card>
 
             {/* Priority Alerts */}
             <Card className="border-warning/50 bg-warning/5">
@@ -266,30 +271,115 @@ const Index = () => {
                     <AlertCircle className="h-5 w-5 text-warning" />
                     <CardTitle>Priority Alerts</CardTitle>
                   </div>
-                  <Button variant="outline" size="sm">View All</Button>
+                  <div className="flex items-center gap-3">
+                    <Select value={alertsLimit.toString()} onValueChange={(value) => setAlertsLimit(parseInt(value))}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="3">Show 3 alerts</SelectItem>
+                        <SelectItem value="5">Show 5 alerts</SelectItem>
+                        <SelectItem value="8">Show 8 alerts</SelectItem>
+                        <SelectItem value="10">Show 10 alerts</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm">View All</Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
-                      <div>
-                        <p className="font-medium text-sm">TechCorp Industries - Payment Overdue 45 Days</p>
-                        <p className="text-xs text-muted-foreground">Risk score increased to 89/100</p>
+                  {filteredData
+                    .filter(client => client.riskCategory === "High" || client.sentimentScore < 0)
+                    .slice(0, alertsLimit)
+                    .map((client, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
+                        <div className="flex items-center gap-3">
+                          <div className={`h-2 w-2 rounded-full animate-pulse ${client.riskCategory === "High" ? "bg-destructive" : "bg-warning"}`} />
+                          <div>
+                            <p className="font-medium text-sm">
+                              {client.name} - {client.riskCategory === "High" ? "Payment Overdue" : "Negative Sentiment Detected"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {client.riskCategory === "High" 
+                                ? `Outstanding: $${client.invoiceAmount.toLocaleString()}` 
+                                : `Sentiment score: ${client.sentimentScore.toFixed(2)}`}
+                            </p>
+                          </div>
+                        </div>
+                        <Button size="sm" variant="outline">Take Action</Button>
                       </div>
-                    </div>
-                    <Button size="sm" variant="outline">Take Action</Button>
+                    ))}
+                  {filteredData.filter(client => client.riskCategory === "High" || client.sentimentScore < 0).length === 0 && (
+                    <p className="text-center text-muted-foreground py-4">No priority alerts at this time</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* AI Sentiment Tab */}
+          <TabsContent value="sentiment" className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-bold text-foreground mb-2">AI Sentiment Analysis</h2>
+              <p className="text-muted-foreground">Communication patterns & behavioral insights</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sentiment Distribution</CardTitle>
+                  <CardDescription>Overall sentiment analysis from client communications</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SentimentAnalysis />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sentiment Trends</CardTitle>
+                  <CardDescription>How sentiment has evolved over time</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center text-muted-foreground py-12">
+                    <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Sentiment trend visualization coming soon</p>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-2 rounded-full bg-warning animate-pulse" />
-                      <div>
-                        <p className="font-medium text-sm">Global Retail Co - Negative Sentiment Detected</p>
-                        <p className="text-xs text-muted-foreground">Recent communication shows financial stress</p>
-                      </div>
-                    </div>
-                    <Button size="sm" variant="outline">Review</Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Sentiment by Risk Category</CardTitle>
+                <CardDescription>Correlation between sentiment and risk levels</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 border border-destructive/30 rounded-lg bg-destructive/5">
+                    <p className="text-sm font-medium text-destructive mb-2">High Risk</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {((filteredData.filter(c => c.riskCategory === "High" && c.sentimentScore < 0).length / 
+                        Math.max(filteredData.filter(c => c.riskCategory === "High").length, 1)) * 100).toFixed(0)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Negative sentiment</p>
+                  </div>
+                  <div className="p-4 border border-warning/30 rounded-lg bg-warning/5">
+                    <p className="text-sm font-medium text-warning mb-2">Medium Risk</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {((filteredData.filter(c => c.riskCategory === "Medium" && c.sentimentScore < 0).length / 
+                        Math.max(filteredData.filter(c => c.riskCategory === "Medium").length, 1)) * 100).toFixed(0)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Negative sentiment</p>
+                  </div>
+                  <div className="p-4 border border-success/30 rounded-lg bg-success/5">
+                    <p className="text-sm font-medium text-success mb-2">Low Risk</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {((filteredData.filter(c => c.riskCategory === "Low" && c.sentimentScore > 0).length / 
+                        Math.max(filteredData.filter(c => c.riskCategory === "Low").length, 1)) * 100).toFixed(0)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Positive sentiment</p>
                   </div>
                 </div>
               </CardContent>
