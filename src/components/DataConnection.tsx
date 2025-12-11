@@ -107,12 +107,16 @@ const DataConnection = ({ onDataLoaded, showAsCard = false, onShowCSVFormat }: D
     }, 1500);
   };
 
-  // Show CSV format dialog when CSV upload is selected
+  // Track the previous connection type to only show dialog on fresh selection
+  const [prevConnectionType, setPrevConnectionType] = useState<string>("");
+
+  // Show CSV format dialog only when user selects CSV upload (not on re-renders)
   useEffect(() => {
-    if (connectionType === "csv-upload" && onShowCSVFormat) {
+    if (connectionType === "csv-upload" && prevConnectionType !== "csv-upload" && onShowCSVFormat) {
       onShowCSVFormat();
     }
-  }, [connectionType, onShowCSVFormat]);
+    setPrevConnectionType(connectionType);
+  }, [connectionType]);
 
   const renderConnectionForm = () => {
     if (connectionType === "csv-upload") {

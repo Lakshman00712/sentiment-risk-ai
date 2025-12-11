@@ -65,8 +65,8 @@ const LandingPage = ({ onDataLoaded, onRiskCategoryClick, onAlertClick, sampleDa
             {/* Header */}
             <div className="text-center space-y-4">
               <div className="flex items-center justify-center gap-3">
-                <div className="h-14 w-14 rounded-xl bg-gradient-orange flex items-center justify-center shadow-lg">
-                  <BarChart3 className="h-7 w-7 text-white" />
+                <div className="h-14 w-14 rounded-xl bg-primary dark:bg-primary/90 flex items-center justify-center shadow-xl ring-4 ring-primary/20 dark:ring-primary/30">
+                  <BarChart3 className="h-7 w-7 text-primary-foreground" />
                 </div>
                 <h1 className="text-4xl font-semibold text-foreground">
                   Credit Risk Insights
