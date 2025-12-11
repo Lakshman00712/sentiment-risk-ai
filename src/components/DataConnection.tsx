@@ -1,19 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Database, Link as LinkIcon, ArrowRight } from "lucide-react";
+import { Upload, Database, Link as LinkIcon, ArrowRight, HelpCircle } from "lucide-react";
 import { parseCSV, fetchCSVFromURL, ClientData } from "@/utils/csvParser";
 import { useToast } from "@/hooks/use-toast";
 
 interface DataConnectionProps {
   onDataLoaded: (data: ClientData[]) => void;
   showAsCard?: boolean;
+  onShowCSVFormat?: () => void;
 }
 
-const DataConnection = ({ onDataLoaded, showAsCard = false }: DataConnectionProps) => {
+const DataConnection = ({ onDataLoaded, showAsCard = false, onShowCSVFormat }: DataConnectionProps) => {
   const [loading, setLoading] = useState(false);
   const [connectionType, setConnectionType] = useState<string>("");
   const [url, setUrl] = useState("");
@@ -106,12 +107,32 @@ const DataConnection = ({ onDataLoaded, showAsCard = false }: DataConnectionProp
     }, 1500);
   };
 
+  // Show CSV format dialog when CSV upload is selected
+  useEffect(() => {
+    if (connectionType === "csv-upload" && onShowCSVFormat) {
+      onShowCSVFormat();
+    }
+  }, [connectionType, onShowCSVFormat]);
+
   const renderConnectionForm = () => {
     if (connectionType === "csv-upload") {
       return (
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="file-upload">Select CSV File</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="file-upload">Select CSV File</Label>
+              {onShowCSVFormat && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onShowCSVFormat}
+                  className="h-6 text-xs"
+                >
+                  <HelpCircle className="h-3 w-3 mr-1" />
+                  View Format
+                </Button>
+              )}
+            </div>
             <Input
               id="file-upload"
               type="file"

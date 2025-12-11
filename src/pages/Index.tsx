@@ -8,6 +8,8 @@ import RiskDetailDialog from "@/components/RiskDetailDialog";
 import AlertDetailDialog from "@/components/AlertDetailDialog";
 import ERPConnectionDialog from "@/components/ERPConnectionDialog";
 import DataConnection from "@/components/DataConnection";
+import ThemeToggle from "@/components/ThemeToggle";
+import CSVFormatDialog from "@/components/CSVFormatDialog";
 import { ClientData } from "@/utils/csvParser";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +26,7 @@ const Index = () => {
   const [selectedAlertClient, setSelectedAlertClient] = useState<ClientData | null>(null);
   const [erpDialogOpen, setErpDialogOpen] = useState(false);
   const [dataConnectionOpen, setDataConnectionOpen] = useState(false);
+  const [csvFormatOpen, setCsvFormatOpen] = useState(false);
   const { toast } = useToast();
 
   const handleDataLoaded = (data: ClientData[]) => {
@@ -81,6 +84,7 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-3">
+              <ThemeToggle />
               <Button 
                 variant="outline" 
                 size="sm"
@@ -105,7 +109,11 @@ const Index = () => {
                     </SheetDescription>
                   </SheetHeader>
                   <div className="mt-6">
-                    <DataConnection onDataLoaded={handleDataLoaded} showAsCard={false} />
+                    <DataConnection 
+                      onDataLoaded={handleDataLoaded} 
+                      showAsCard={false}
+                      onShowCSVFormat={() => setCsvFormatOpen(true)}
+                    />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -159,6 +167,11 @@ const Index = () => {
       <ERPConnectionDialog
         open={erpDialogOpen}
         onOpenChange={setErpDialogOpen}
+      />
+
+      <CSVFormatDialog
+        open={csvFormatOpen}
+        onOpenChange={setCsvFormatOpen}
       />
     </div>
   );
