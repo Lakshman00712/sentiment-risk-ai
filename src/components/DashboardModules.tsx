@@ -37,15 +37,31 @@ interface DashboardModulesProps {
   onAlertClick: (client: ClientData) => void;
 }
 
-// Mock history data
-const historyData = [
-  { id: 1, action: "Data Import", details: "Imported 150 client records", timestamp: "2024-01-15 09:30:00", user: "System" },
-  { id: 2, action: "Risk Assessment", details: "Batch risk scoring completed", timestamp: "2024-01-15 10:00:00", user: "AI Engine" },
-  { id: 3, action: "Alert Generated", details: "3 high-risk clients flagged", timestamp: "2024-01-15 10:05:00", user: "System" },
-  { id: 4, action: "Report Export", details: "Monthly summary exported", timestamp: "2024-01-14 16:00:00", user: "Admin" },
-  { id: 5, action: "Data Refresh", details: "ERP data synchronized", timestamp: "2024-01-14 08:00:00", user: "System" },
-  { id: 6, action: "Sentiment Update", details: "Communication analysis completed", timestamp: "2024-01-13 14:30:00", user: "AI Engine" },
-];
+// Generate dynamic history data with IST timezone
+const generateHistoryData = () => {
+  const now = new Date();
+  const formatIST = (date: Date) => {
+    return date.toLocaleString('en-IN', { 
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }) + ' IST';
+  };
+  
+  return [
+    { id: 1, action: "Data Import", details: "Imported 150 client records", timestamp: formatIST(new Date(now.getTime() - 30 * 60 * 1000)), user: "System" },
+    { id: 2, action: "Risk Assessment", details: "Batch risk scoring completed", timestamp: formatIST(new Date(now.getTime() - 60 * 60 * 1000)), user: "AI Engine" },
+    { id: 3, action: "Alert Generated", details: "3 high-risk clients flagged", timestamp: formatIST(new Date(now.getTime() - 90 * 60 * 1000)), user: "System" },
+    { id: 4, action: "Report Export", details: "Monthly summary exported", timestamp: formatIST(new Date(now.getTime() - 24 * 60 * 60 * 1000)), user: "Admin" },
+    { id: 5, action: "Data Refresh", details: "ERP data synchronized", timestamp: formatIST(new Date(now.getTime() - 32 * 60 * 60 * 1000)), user: "System" },
+    { id: 6, action: "Sentiment Update", details: "Communication analysis completed", timestamp: formatIST(new Date(now.getTime() - 48 * 60 * 60 * 1000)), user: "AI Engine" },
+  ];
+};
 
 const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: DashboardModulesProps) => {
   const [timeRange, setTimeRange] = useState("30d");
@@ -98,19 +114,32 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
     });
   }, [clientData, filters]);
 
-  const metrics = useMemo(() => {
-    const totalAR = filteredData.reduce((sum, client) => sum + client.invoiceAmount, 0);
-    const avgRiskScore = filteredData.length > 0 
-      ? filteredData.reduce((sum, client) => {
+  // Metrics for Summary tab (uses all client data, not filtered)
+  const summaryMetrics = useMemo(() => {
+    const totalAR = clientData.reduce((sum, client) => sum + client.invoiceAmount, 0);
+    const avgRiskScore = clientData.length > 0 
+      ? clientData.reduce((sum, client) => {
           const riskValue = client.riskCategory === "High" ? 85 : client.riskCategory === "Medium" ? 60 : 35;
           return sum + riskValue;
-        }, 0) / filteredData.length
+        }, 0) / clientData.length
       : 0;
-    const highRiskCount = filteredData.filter(c => c.riskCategory === "High").length;
+    const highRiskCount = clientData.filter(c => c.riskCategory === "High").length;
 
     return {
       totalAR: totalAR.toFixed(2),
       avgRiskScore: avgRiskScore.toFixed(0),
+      highRiskCount,
+      activeClients: clientData.length
+    };
+  }, [clientData]);
+
+  // Metrics for Reports tab (uses filtered data)
+  const reportsMetrics = useMemo(() => {
+    const totalAR = filteredData.reduce((sum, client) => sum + client.invoiceAmount, 0);
+    const highRiskCount = filteredData.filter(c => c.riskCategory === "High").length;
+
+    return {
+      totalAR: totalAR.toFixed(2),
       highRiskCount,
       activeClients: filteredData.length
     };
@@ -176,7 +205,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
           <div className="grid grid-cols-2 gap-4">
             <MetricsCard
               title="Total AR Value"
-              value={`$${(parseFloat(metrics.totalAR) / 1000).toFixed(1)}K`}
+              value={`$${(parseFloat(summaryMetrics.totalAR) / 1000).toFixed(1)}K`}
               change={8.2}
               trend="up"
               icon={DollarSign}
@@ -184,7 +213,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
             />
             <MetricsCard
               title="High Risk"
-              value={metrics.highRiskCount.toString()}
+              value={summaryMetrics.highRiskCount.toString()}
               change={12.5}
               trend="up"
               icon={AlertCircle}
@@ -212,7 +241,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
             <CardContent>
               <RiskDistribution 
                 viewMode={riskViewMode} 
-                clientData={filteredData}
+                clientData={clientData}
                 onCategoryClick={onRiskCategoryClick}
               />
             </CardContent>
@@ -240,7 +269,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {filteredData
+                {clientData
                   .filter(client => client.riskCategory === "High" || client.sentimentScore < 0)
                   .slice(0, alertsLimit)
                   .map((client, index) => (
@@ -274,33 +303,40 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
 
         {/* Reports Tab - with filters shown by default */}
         <TabsContent value="reports" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Reports & Filters</h3>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                {showFilters ? <ChevronUp className="h-4 w-4 mr-1" /> : <ChevronDown className="h-4 w-4 mr-1" />}
-                {showFilters ? "Hide Filters" : "Show Filters"}
-              </Button>
-              <Button size="sm" onClick={() => setExportDialogOpen(true)}>
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
+          <h3 className="text-lg font-semibold">Reports & Filters</h3>
           
-          {showFilters && (
-            <AdvancedFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              onExport={() => setExportDialogOpen(true)}
-              totalRecords={clientData.length}
-              filteredRecords={filteredData.length}
-            />
-          )}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Filters & Search</CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90"
+                    onClick={() => setShowFilters(!showFilters)}
+                  >
+                    {showFilters ? <ChevronUp className="h-4 w-4 mr-1" /> : <ChevronDown className="h-4 w-4 mr-1" />}
+                    {showFilters ? "Hide Filters" : "Show Filters"}
+                  </Button>
+                  <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => setExportDialogOpen(true)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            {showFilters && (
+              <CardContent className="pt-0">
+                <AdvancedFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  onExport={() => setExportDialogOpen(true)}
+                  totalRecords={clientData.length}
+                  filteredRecords={filteredData.length}
+                />
+              </CardContent>
+            )}
+          </Card>
           
           <ClientsList filter="all" clientData={filteredData} />
         </TabsContent>
@@ -324,7 +360,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
           <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
-                {historyData.map((item) => (
+                {generateHistoryData().map((item) => (
                   <div 
                     key={item.id} 
                     className="flex items-start gap-4 p-4 rounded-lg bg-muted/30 border border-border hover:bg-muted/50 transition-colors"
@@ -381,35 +417,10 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
             
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Current Session</CardTitle>
+                <CardTitle className="text-base">Support</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">Records Loaded</span>
-                  <span className="text-sm font-medium">{clientData.length}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">Filtered Records</span>
-                  <span className="text-sm font-medium">{filteredData.length}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-border">
-                  <span className="text-sm text-muted-foreground">High Risk Clients</span>
-                  <span className="text-sm font-medium text-destructive">{metrics.highRiskCount}</span>
-                </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-sm text-muted-foreground">Total AR Value</span>
-                  <span className="text-sm font-medium">${(parseFloat(metrics.totalAR) / 1000).toFixed(1)}K</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Support & Documentation</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>For support inquiries, please contact the development team.</p>
-                <p>Documentation and user guides are available in the help center.</p>
+              <CardContent className="text-sm text-muted-foreground">
+                <p>For support inquiries, please contact the developer: <a href="mailto:kplakshman007@gmail.com" className="text-primary hover:underline">kplakshman007@gmail.com</a></p>
               </CardContent>
             </Card>
           </div>
