@@ -3,60 +3,43 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Building2, ChevronRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Building2, ChevronRight, Clock, CreditCard } from "lucide-react";
 import { ClientData } from "@/utils/csvParser";
 
 interface Client {
   id: string;
   name: string;
-  industry: string;
   riskScore: number;
+  riskCategory: "Low" | "Medium" | "High";
   outstandingBalance: number;
-  paymentHistory: number;
-  sentiment: "positive" | "neutral" | "negative";
-  lastContact: string;
+  daysPastDue: number;
+  creditUtilization: number;
+  dueDate: string;
 }
 
 const convertClientData = (data: ClientData): Client => {
-  // Convert sentiment score to positive/neutral/negative
-  const sentiment = data.sentimentScore > 0.3 ? "positive" : 
-                   data.sentimentScore < -0.3 ? "negative" : "neutral";
-  
-  // Convert behavior score (0-1) to percentage for payment history
-  const paymentHistory = Math.round(data.behaviorScore * 100);
-  
-  // Calculate risk score from risk category and behavior
-  const riskScore = data.riskCategory === "High" ? 70 + Math.random() * 30 :
-                   data.riskCategory === "Medium" ? 40 + Math.random() * 30 :
-                   Math.random() * 40;
-  
   return {
     id: data.id,
     name: data.name,
-    industry: data.industry || "General",
-    riskScore: Math.round(riskScore),
+    riskScore: data.riskScore,
+    riskCategory: data.riskCategory,
     outstandingBalance: data.invoiceAmount,
-    paymentHistory,
-    sentiment,
-    lastContact: new Date(data.lastPaymentDate).toLocaleDateString() || "Unknown"
+    daysPastDue: data.daysPastDue,
+    creditUtilization: data.creditUtilization,
+    dueDate: data.dueDate,
   };
 };
 
-const getRiskBadge = (score: number) => {
-  if (score >= 70) return { label: "High Risk", variant: "destructive" as const };
-  if (score >= 40) return { label: "Medium Risk", variant: "warning" as const };
+const getRiskBadge = (category: "Low" | "Medium" | "High") => {
+  if (category === "High") return { label: "High Risk", variant: "destructive" as const };
+  if (category === "Medium") return { label: "Medium Risk", variant: "warning" as const };
   return { label: "Low Risk", variant: "success" as const };
 };
 
-const getSentimentIcon = (sentiment: string) => {
-  switch (sentiment) {
-    case "positive":
-      return <TrendingUp className="h-4 w-4 text-success" />;
-    case "negative":
-      return <TrendingDown className="h-4 w-4 text-destructive" />;
-    default:
-      return <Minus className="h-4 w-4 text-muted-foreground" />;
-  }
+const getDaysPastDueColor = (days: number) => {
+  if (days >= 90) return "text-destructive";
+  if (days >= 30) return "text-warning";
+  return "text-success";
 };
 
 interface ClientsListProps {
@@ -69,9 +52,9 @@ const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
   
   const filteredClients = clients.filter(client => {
     if (filter === "all") return true;
-    if (filter === "high") return client.riskScore >= 70;
-    if (filter === "medium") return client.riskScore >= 40 && client.riskScore < 70;
-    if (filter === "low") return client.riskScore < 40;
+    if (filter === "high") return client.riskCategory === "High";
+    if (filter === "medium") return client.riskCategory === "Medium";
+    if (filter === "low") return client.riskCategory === "Low";
     return true;
   });
 
@@ -80,7 +63,7 @@ const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
       <CardContent className="p-6">
         <div className="space-y-4">
           {filteredClients.map((client) => {
-            const riskBadge = getRiskBadge(client.riskScore);
+            const riskBadge = getRiskBadge(client.riskCategory);
             return (
               <div
                 key={client.id}
@@ -96,12 +79,19 @@ const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
                     <div className="flex items-center gap-3 mb-1">
                       <h4 className="font-semibold text-foreground">{client.name}</h4>
                       <Badge variant={riskBadge.variant}>{riskBadge.label}</Badge>
-                      {getSentimentIcon(client.sentiment)}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{client.industry}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span className={getDaysPastDueColor(client.daysPastDue)}>
+                          {client.daysPastDue} days overdue
+                        </span>
+                      </span>
                       <span>•</span>
-                      <span>Last contact: {client.lastContact}</span>
+                      <span className="flex items-center gap-1">
+                        <CreditCard className="h-3 w-3" />
+                        {client.creditUtilization}% utilized
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -127,11 +117,11 @@ const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
                   
                   <div className="w-32">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs text-muted-foreground">Payment History</p>
-                      <p className="text-xs font-semibold text-foreground">{client.paymentHistory}%</p>
+                      <p className="text-xs text-muted-foreground">Credit Used</p>
+                      <p className="text-xs font-semibold text-foreground">{client.creditUtilization}%</p>
                     </div>
                     <Progress 
-                      value={client.paymentHistory} 
+                      value={client.creditUtilization} 
                       className="h-2"
                     />
                   </div>

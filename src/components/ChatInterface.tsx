@@ -44,25 +44,44 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
     
     if (lowerQuery.includes("high risk") || lowerQuery.includes("risky")) {
       const highRisk = data.filter(c => c.riskCategory === "High");
-      return `You have ${highRisk.length} high-risk clients with a total AR value of $${highRisk.reduce((sum, c) => sum + c.invoiceAmount, 0).toLocaleString()}. I recommend reviewing these accounts for immediate follow-up.`;
+      const totalAR = highRisk.reduce((sum, c) => sum + c.invoiceAmount, 0);
+      const avgScore = highRisk.length > 0 ? Math.round(highRisk.reduce((sum, c) => sum + c.riskScore, 0) / highRisk.length) : 0;
+      return `You have ${highRisk.length} high-risk clients with a total AR value of $${totalAR.toLocaleString()}. Their average risk score is ${avgScore}/100. I recommend reviewing these accounts for immediate follow-up.`;
     }
     
-    if (lowerQuery.includes("sentiment") || lowerQuery.includes("negative")) {
-      const negSentiment = data.filter(c => c.sentimentScore < -0.3);
-      return `${negSentiment.length} clients show negative sentiment patterns. This could indicate dissatisfaction or potential payment issues. Would you like me to show you the details?`;
+    if (lowerQuery.includes("overdue") || lowerQuery.includes("past due") || lowerQuery.includes("days past")) {
+      const overdue90 = data.filter(c => c.daysPastDue >= 90);
+      const overdue60 = data.filter(c => c.daysPastDue >= 60 && c.daysPastDue < 90);
+      const overdue30 = data.filter(c => c.daysPastDue >= 30 && c.daysPastDue < 60);
+      return `Payment status breakdown:\n• 90+ days overdue: ${overdue90.length} clients ($${overdue90.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})\n• 60-89 days: ${overdue60.length} clients\n• 30-59 days: ${overdue30.length} clients\n\nThe 90+ days overdue accounts need immediate attention.`;
     }
     
-    if (lowerQuery.includes("total") || lowerQuery.includes("ar")) {
+    if (lowerQuery.includes("credit") || lowerQuery.includes("utilization")) {
+      const highUtil = data.filter(c => c.creditUtilization >= 85);
+      return `${highUtil.length} clients have credit utilization above 85%, which is a significant risk factor. Their total outstanding is $${highUtil.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()}.`;
+    }
+    
+    if (lowerQuery.includes("total") || lowerQuery.includes("ar") || lowerQuery.includes("receivable")) {
       const total = data.reduce((sum, c) => sum + c.invoiceAmount, 0);
-      return `Your total accounts receivable is $${total.toLocaleString()} across ${data.length} clients. The average invoice amount is $${(total / data.length).toLocaleString()}.`;
+      const avgScore = Math.round(data.reduce((sum, c) => sum + c.riskScore, 0) / data.length);
+      return `Your total accounts receivable is $${total.toLocaleString()} across ${data.length} clients. The average risk score is ${avgScore}/100.`;
     }
     
-    if (lowerQuery.includes("late") || lowerQuery.includes("overdue")) {
-      const late = data.filter(c => c.paymentHistory === "Late");
-      return `${late.length} clients have late payment history. This represents $${late.reduce((sum, c) => sum + c.invoiceAmount, 0).toLocaleString()} in potential risk.`;
+    if (lowerQuery.includes("reminder") || lowerQuery.includes("reminders")) {
+      const highReminders = data.filter(c => c.remindersCount >= 3);
+      return `${highReminders.length} clients have received 3 or more payment reminders, indicating potential payment issues. Consider escalating collection efforts for these accounts.`;
+    }
+
+    if (lowerQuery.includes("order") || lowerQuery.includes("orders") || lowerQuery.includes("frequency")) {
+      const lowOrders = data.filter(c => c.avgOrders60Days < 5);
+      return `${lowOrders.length} clients have low order frequency (less than 5 orders in 60 days), which may indicate reduced business activity or potential churn risk.`;
+    }
+
+    if (lowerQuery.includes("why") && (lowerQuery.includes("risk") || lowerQuery.includes("score"))) {
+      return `Risk scores are calculated using a weighted formula:\n• Days Past Due (50%): 0-90 days normalized\n• Credit Utilization (25%): 0-85% normalized\n• Reminders Count (15%): 0-3 normalized\n• Avg Orders 60 Days (10%): Lower orders = higher risk\n\nThresholds: High Risk ≥ 65, Medium 35-64, Low < 35`;
     }
     
-    return "I can help you analyze risk patterns, payment behaviors, sentiment analysis, and more. Try asking about high-risk clients, sentiment trends, or specific metrics you'd like to explore.";
+    return "I can help you analyze risk patterns, overdue payments, credit utilization, and more. Try asking about high-risk clients, overdue accounts, credit utilization, or why clients have specific risk scores.";
   };
 
   return (
@@ -80,7 +99,7 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
                 </div>
               )}
               <Card className={`p-4 max-w-[80%] ${msg.role === "user" ? "bg-orange/10 border-orange/20" : "bg-muted/50"}`}>
-                <p className="text-sm leading-relaxed">{msg.content}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</p>
               </Card>
               {msg.role === "user" && (
                 <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
@@ -98,7 +117,7 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder="Ask about your data, risk patterns, or specific insights..."
+            placeholder="Ask about risk scores, overdue accounts, credit utilization..."
             className="flex-1"
           />
           <Button onClick={handleSend} disabled={!input.trim()}>
