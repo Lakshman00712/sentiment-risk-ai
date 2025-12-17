@@ -5,10 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   AlertCircle, 
-  Users, 
   DollarSign,
-  Shield,
-  Brain,
   Info,
   History,
   FileText,
@@ -23,7 +20,6 @@ import {
 import MetricsCard from "@/components/MetricsCard";
 import ClientsList from "@/components/ClientsList";
 import RiskDistribution from "@/components/RiskDistribution";
-import SentimentAnalysis from "@/components/SentimentAnalysis";
 import DataImport from "@/components/DataImport";
 import LiveDataDialog from "@/components/LiveDataDialog";
 import AdvancedFilters, { FilterOptions } from "@/components/AdvancedFilters";
@@ -59,7 +55,7 @@ const generateHistoryData = () => {
     { id: 3, action: "Alert Generated", details: "3 high-risk clients flagged", timestamp: formatIST(new Date(now.getTime() - 90 * 60 * 1000)), user: "System" },
     { id: 4, action: "Report Export", details: "Monthly summary exported", timestamp: formatIST(new Date(now.getTime() - 24 * 60 * 60 * 1000)), user: "Admin" },
     { id: 5, action: "Data Refresh", details: "ERP data synchronized", timestamp: formatIST(new Date(now.getTime() - 32 * 60 * 60 * 1000)), user: "System" },
-    { id: 6, action: "Sentiment Update", details: "Communication analysis completed", timestamp: formatIST(new Date(now.getTime() - 48 * 60 * 60 * 1000)), user: "AI Engine" },
+    { id: 6, action: "Risk Update", details: "Risk scoring model updated", timestamp: formatIST(new Date(now.getTime() - 48 * 60 * 60 * 1000)), user: "AI Engine" },
   ];
 };
 
@@ -71,10 +67,11 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     search: "",
-    paymentHistory: "all",
     riskCategory: "all",
-    sentimentMin: -1,
-    sentimentMax: 1,
+    daysPastDueMin: 0,
+    daysPastDueMax: 180,
+    creditUtilizationMin: 0,
+    creditUtilizationMax: 100,
     dateFrom: undefined,
     dateTo: undefined,
   });
@@ -92,22 +89,22 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
         if (!matchesSearch) return false;
       }
 
-      if (filters.paymentHistory !== "all" && client.paymentHistory !== filters.paymentHistory) {
-        return false;
-      }
-
       if (filters.riskCategory !== "all" && client.riskCategory !== filters.riskCategory) {
         return false;
       }
 
-      if (client.sentimentScore < filters.sentimentMin || client.sentimentScore > filters.sentimentMax) {
+      if (client.daysPastDue < filters.daysPastDueMin || client.daysPastDue > filters.daysPastDueMax) {
+        return false;
+      }
+
+      if (client.creditUtilization < filters.creditUtilizationMin || client.creditUtilization > filters.creditUtilizationMax) {
         return false;
       }
 
       if (filters.dateFrom || filters.dateTo) {
-        const paymentDate = new Date(client.lastPaymentDate);
-        if (filters.dateFrom && paymentDate < filters.dateFrom) return false;
-        if (filters.dateTo && paymentDate > filters.dateTo) return false;
+        const dueDate = new Date(client.dueDate);
+        if (filters.dateFrom && dueDate < filters.dateFrom) return false;
+        if (filters.dateTo && dueDate > filters.dateTo) return false;
       }
 
       return true;
@@ -118,16 +115,13 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
   const summaryMetrics = useMemo(() => {
     const totalAR = clientData.reduce((sum, client) => sum + client.invoiceAmount, 0);
     const avgRiskScore = clientData.length > 0 
-      ? clientData.reduce((sum, client) => {
-          const riskValue = client.riskCategory === "High" ? 85 : client.riskCategory === "Medium" ? 60 : 35;
-          return sum + riskValue;
-        }, 0) / clientData.length
+      ? Math.round(clientData.reduce((sum, client) => sum + client.riskScore, 0) / clientData.length)
       : 0;
     const highRiskCount = clientData.filter(c => c.riskCategory === "High").length;
 
     return {
       totalAR: totalAR.toFixed(2),
-      avgRiskScore: avgRiskScore.toFixed(0),
+      avgRiskScore,
       highRiskCount,
       activeClients: clientData.length
     };
@@ -156,14 +150,10 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
   return (
     <>
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
           <TabsTrigger value="summary">
             <BarChart3 className="h-4 w-4 mr-2" />
             Summary
-          </TabsTrigger>
-          <TabsTrigger value="sentiment">
-            <Brain className="h-4 w-4 mr-2" />
-            Sentiment
           </TabsTrigger>
           <TabsTrigger value="reports">
             <FileText className="h-4 w-4 mr-2" />
@@ -270,13 +260,15 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
             <CardContent>
               <div className="space-y-2">
                 {clientData
-                  .filter(client => client.riskCategory === "High" || client.sentimentScore < 0)
+                  .filter(client => client.riskCategory === "High" || client.riskScore >= 65)
+                  .sort((a, b) => b.riskScore - a.riskScore)
                   .slice(0, alertsLimit)
                   .map((client, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-card rounded border text-sm">
                       <div className="flex items-center gap-2">
                         <div className={`h-2 w-2 rounded-full ${client.riskCategory === "High" ? "bg-destructive" : "bg-warning"}`} />
                         <span className="font-medium">{client.name}</span>
+                        <span className="text-muted-foreground text-xs">Score: {client.riskScore}</span>
                       </div>
                       <Button size="sm" variant="outline" onClick={() => onAlertClick(client)}>
                         Action
@@ -284,19 +276,6 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
                     </div>
                   ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* AI Sentiment Tab */}
-        <TabsContent value="sentiment" className="space-y-6">
-          <h3 className="text-lg font-semibold">AI Sentiment Analysis</h3>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Sentiment Distribution & Trends</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SentimentAnalysis />
             </CardContent>
           </Card>
         </TabsContent>
@@ -394,7 +373,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
               <CardContent className="space-y-3">
                 <div className="flex justify-between py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Version</span>
-                  <span className="text-sm font-medium">1.2.0</span>
+                  <span className="text-sm font-medium">2.0.0</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Last Updated</span>
@@ -410,7 +389,39 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
                 </div>
                 <div className="flex justify-between py-2 border-b border-border">
                   <span className="text-sm text-muted-foreground">Build</span>
-                  <span className="text-sm font-medium font-mono">2024.01.15-001</span>
+                  <span className="text-sm font-medium font-mono">2024.12.17-001</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Risk Scoring Model</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Days Past Due Weight</span>
+                  <span className="text-sm font-medium">50%</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Credit Utilization Weight</span>
+                  <span className="text-sm font-medium">25%</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Reminders Count Weight</span>
+                  <span className="text-sm font-medium">15%</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Avg Orders (60 days) Weight</span>
+                  <span className="text-sm font-medium">10%</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">High Risk Threshold</span>
+                  <span className="text-sm font-medium">≥ 65</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Medium Risk Threshold</span>
+                  <span className="text-sm font-medium">35 - 64</span>
                 </div>
               </CardContent>
             </Card>
@@ -427,8 +438,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
         </TabsContent>
       </Tabs>
 
-      {/* Export Dialog */}
-      <ExportDialog
+      <ExportDialog 
         open={exportDialogOpen}
         onOpenChange={setExportDialogOpen}
         data={filteredData}

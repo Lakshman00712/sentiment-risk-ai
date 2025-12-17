@@ -26,11 +26,18 @@ const allColumns = [
   { key: "email", label: "Email" },
   { key: "phoneNumber", label: "Phone Number" },
   { key: "invoiceAmount", label: "Invoice Amount" },
-  { key: "paymentHistory", label: "Payment History" },
-  { key: "lastPaymentDate", label: "Last Payment Date" },
-  { key: "sentimentScore", label: "Sentiment Score" },
-  { key: "behaviorScore", label: "Behavior Score" },
+  { key: "invoiceDate", label: "Invoice Date" },
+  { key: "dueDate", label: "Due Date" },
+  { key: "paymentDate", label: "Payment Date" },
+  { key: "avgOrders60Days", label: "Avg Orders (60 days)" },
+  { key: "remindersCount", label: "Reminders Count" },
+  { key: "creditLimit", label: "Credit Limit" },
+  { key: "creditUsed", label: "Credit Used" },
+  { key: "daysPastDue", label: "Days Past Due" },
+  { key: "creditUtilization", label: "Credit Utilization (%)" },
+  { key: "riskScore", label: "Risk Score" },
   { key: "riskCategory", label: "Risk Category" },
+  { key: "riskRationale", label: "Risk Rationale" },
 ];
 
 const ExportDialog = ({ open, onOpenChange, data }: ExportDialogProps) => {

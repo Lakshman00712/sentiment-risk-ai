@@ -9,14 +9,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Filter, Search, CalendarIcon, X, Download } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { ClientData } from "@/utils/csvParser";
 
 export interface FilterOptions {
   search: string;
-  paymentHistory: string;
   riskCategory: string;
-  sentimentMin: number;
-  sentimentMax: number;
+  daysPastDueMin: number;
+  daysPastDueMax: number;
+  creditUtilizationMin: number;
+  creditUtilizationMax: number;
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
 }
@@ -35,10 +35,11 @@ const AdvancedFilters = ({ filters, onFiltersChange, onExport, totalRecords, fil
   const handleReset = () => {
     onFiltersChange({
       search: "",
-      paymentHistory: "all",
       riskCategory: "all",
-      sentimentMin: -1,
-      sentimentMax: 1,
+      daysPastDueMin: 0,
+      daysPastDueMax: 180,
+      creditUtilizationMin: 0,
+      creditUtilizationMax: 100,
       dateFrom: undefined,
       dateTo: undefined,
     });
@@ -46,10 +47,11 @@ const AdvancedFilters = ({ filters, onFiltersChange, onExport, totalRecords, fil
 
   const hasActiveFilters = 
     filters.search !== "" ||
-    filters.paymentHistory !== "all" ||
     filters.riskCategory !== "all" ||
-    filters.sentimentMin !== -1 ||
-    filters.sentimentMax !== 1 ||
+    filters.daysPastDueMin !== 0 ||
+    filters.daysPastDueMax !== 180 ||
+    filters.creditUtilizationMin !== 0 ||
+    filters.creditUtilizationMax !== 100 ||
     filters.dateFrom !== undefined ||
     filters.dateTo !== undefined;
 
@@ -96,26 +98,6 @@ const AdvancedFilters = ({ filters, onFiltersChange, onExport, totalRecords, fil
 
         {isExpanded && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4 border-t">
-            {/* Payment History */}
-            <div className="space-y-2">
-              <Label>Payment History</Label>
-              <Select
-                value={filters.paymentHistory}
-                onValueChange={(value) => onFiltersChange({ ...filters, paymentHistory: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="On-time">On-time</SelectItem>
-                  <SelectItem value="Late">Late</SelectItem>
-                  <SelectItem value="Partial">Partial</SelectItem>
-                  <SelectItem value="Default">Default</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Risk Category */}
             <div className="space-y-2">
               <Label>Risk Category</Label>
@@ -135,34 +117,53 @@ const AdvancedFilters = ({ filters, onFiltersChange, onExport, totalRecords, fil
               </Select>
             </div>
 
-            {/* Sentiment Score Range */}
+            {/* Days Past Due Range */}
             <div className="space-y-2">
-              <Label>Sentiment Score Range</Label>
+              <Label>Days Past Due Range</Label>
               <div className="flex gap-2">
                 <Input
                   type="number"
                   placeholder="Min"
-                  value={filters.sentimentMin}
-                  onChange={(e) => onFiltersChange({ ...filters, sentimentMin: parseFloat(e.target.value) || -1 })}
-                  min="-1"
-                  max="1"
-                  step="0.1"
+                  value={filters.daysPastDueMin}
+                  onChange={(e) => onFiltersChange({ ...filters, daysPastDueMin: parseInt(e.target.value) || 0 })}
+                  min="0"
                 />
                 <Input
                   type="number"
                   placeholder="Max"
-                  value={filters.sentimentMax}
-                  onChange={(e) => onFiltersChange({ ...filters, sentimentMax: parseFloat(e.target.value) || 1 })}
-                  min="-1"
-                  max="1"
-                  step="0.1"
+                  value={filters.daysPastDueMax}
+                  onChange={(e) => onFiltersChange({ ...filters, daysPastDueMax: parseInt(e.target.value) || 180 })}
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Credit Utilization Range */}
+            <div className="space-y-2">
+              <Label>Credit Utilization (%)</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.creditUtilizationMin}
+                  onChange={(e) => onFiltersChange({ ...filters, creditUtilizationMin: parseInt(e.target.value) || 0 })}
+                  min="0"
+                  max="100"
+                />
+                <Input
+                  type="number"
+                  placeholder="Max"
+                  value={filters.creditUtilizationMax}
+                  onChange={(e) => onFiltersChange({ ...filters, creditUtilizationMax: parseInt(e.target.value) || 100 })}
+                  min="0"
+                  max="100"
                 />
               </div>
             </div>
 
             {/* Date From */}
             <div className="space-y-2">
-              <Label>Payment Date From</Label>
+              <Label>Due Date From</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -190,7 +191,7 @@ const AdvancedFilters = ({ filters, onFiltersChange, onExport, totalRecords, fil
 
             {/* Date To */}
             <div className="space-y-2">
-              <Label>Payment Date To</Label>
+              <Label>Due Date To</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

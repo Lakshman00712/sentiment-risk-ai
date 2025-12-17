@@ -1,201 +1,101 @@
-CustomerID,Name,Email,PhoneNumber,InvoiceAmount,PaymentHistory,LastPaymentDate,SentimentScore,BehaviorScore,SocialMediaSignal,RiskCategory
-1101,Customer 101,customer101@example.com,+91-9000000101,6995.04,Late,2024-11-16 08:19:09.425491,-0.57,0.95,Negative,Medium
-1102,Customer 102,customer102@example.com,+91-9000000102,2932.78,Late,2025-08-01 08:19:09.425491,-0.22,0.29,Neutral,Medium
-1103,Customer 103,customer103@example.com,+91-9000000103,2345.83,Partial,2024-11-13 08:19:09.425491,0.7,0.73,Neutral,High
-1104,Customer 104,customer104@example.com,+91-9000000104,5558.02,Default,2024-12-11 08:19:09.425491,-0.74,0.02,Neutral,Medium
-1105,Customer 105,customer105@example.com,+91-9000000105,7222.74,On-time,2025-02-01 08:19:09.425491,0.79,0.88,Neutral,High
-1106,Customer 106,customer106@example.com,+91-9000000106,4288.75,Default,2025-09-26 08:19:09.425491,-0.01,0.06,Positive,High
-1107,Customer 107,customer107@example.com,+91-9000000107,9809.57,Late,2025-03-23 08:19:09.425491,-0.15,0.73,Negative,Medium
-1108,Customer 108,customer108@example.com,+91-9000000108,6879.81,Default,2025-05-27 08:19:09.425491,-0.39,0.99,Negative,High
-1109,Customer 109,customer109@example.com,+91-9000000109,4861.23,Partial,2025-06-06 08:19:09.425491,0.83,0.5,Negative,High
-1110,Customer 110,customer110@example.com,+91-9000000110,3981.96,Default,2025-02-01 08:19:09.425491,0.04,0.21,Negative,Medium
-1111,Customer 111,customer111@example.com,+91-9000000111,3497.46,Default,2025-06-07 08:19:09.425491,0.61,0.59,Negative,Medium
-1112,Customer 112,customer112@example.com,+91-9000000112,7317.59,Default,2025-07-10 08:19:09.425491,0.72,0.62,Positive,Medium
-1113,Customer 113,customer113@example.com,+91-9000000113,4441.87,Late,2025-02-27 08:19:09.425491,0.84,0.67,Positive,High
-1114,Customer 114,customer114@example.com,+91-9000000114,690.81,Default,2025-04-12 08:19:09.425491,-0.39,0.17,Neutral,Low
-1115,Customer 115,customer115@example.com,+91-9000000115,4040.64,Partial,2025-04-25 08:19:09.425491,-0.32,0.9,Negative,High
-1116,Customer 116,customer116@example.com,+91-9000000116,7406.15,Partial,2025-10-17 08:19:09.425491,0.19,0.62,Negative,High
-1117,Customer 117,customer117@example.com,+91-9000000117,1906.67,Late,2025-06-13 08:19:09.425491,-0.12,0.04,Positive,High
-1118,Customer 118,customer118@example.com,+91-9000000118,1836.97,Default,2025-10-23 08:19:09.425491,0.87,0.68,Negative,High
-1119,Customer 119,customer119@example.com,+91-9000000119,5362.36,Late,2025-06-01 08:19:09.425491,-0.2,0.2,Neutral,Medium
-1120,Customer 120,customer120@example.com,+91-9000000120,5365.09,Late,2025-05-12 08:19:09.425491,-0.04,0.03,Negative,High
-1121,Customer 121,customer121@example.com,+91-9000000121,6380.57,Late,2024-11-12 08:19:09.425491,0.23,0.55,Negative,High
-1122,Customer 122,customer122@example.com,+91-9000000122,8509.37,Late,2025-05-05 08:19:09.425491,-0.19,0.81,Negative,Low
-1123,Customer 123,customer123@example.com,+91-9000000123,7272.11,Late,2025-10-15 08:19:09.425491,0.98,0.86,Neutral,High
-1124,Customer 124,customer124@example.com,+91-9000000124,6149.13,Default,2025-01-22 08:19:09.425491,-0.8,0.1,Neutral,High
-1125,Customer 125,customer125@example.com,+91-9000000125,7252.19,Late,2024-11-30 08:19:09.425491,-0.56,0.66,Positive,Medium
-1126,Customer 126,customer126@example.com,+91-9000000126,3297.29,Late,2025-04-08 08:19:09.425491,-0.35,0.71,Negative,Low
-1127,Customer 127,customer127@example.com,+91-9000000127,3681.71,Late,2025-03-26 08:19:09.425491,-0.7,0.29,Positive,Low
-1128,Customer 128,customer128@example.com,+91-9000000128,2359.81,Late,2025-09-19 08:19:09.425491,-0.43,0.97,Neutral,High
-1129,Customer 129,customer129@example.com,+91-9000000129,3007.77,Late,2024-11-20 08:19:09.425491,0.56,0.28,Neutral,Low
-1130,Customer 130,customer130@example.com,+91-9000000130,6346.66,Partial,2025-10-12 08:19:09.425491,0.05,0.07,Negative,Low
-1131,Customer 131,customer131@example.com,+91-9000000131,1011.84,Partial,2025-07-17 08:19:09.425491,-0.93,0.52,Positive,Low
-1132,Customer 132,customer132@example.com,+91-9000000132,4393.64,Late,2025-10-07 08:19:09.425491,0.97,0.69,Neutral,High
-1133,Customer 133,customer133@example.com,+91-9000000133,4365.54,Late,2025-06-20 08:19:09.425491,0.23,0.24,Neutral,Low
-1134,Customer 134,customer134@example.com,+91-9000000134,4987.48,Late,2025-09-03 08:19:09.425491,-0.88,0.34,Positive,Low
-1135,Customer 135,customer135@example.com,+91-9000000135,4315.72,On-time,2025-03-13 08:19:09.425491,0.32,0.56,Positive,Low
-1136,Customer 136,customer136@example.com,+91-9000000136,3191.39,Partial,2025-03-18 08:19:09.425491,-0.24,0.89,Neutral,Medium
-1137,Customer 137,customer137@example.com,+91-9000000137,4320.88,Default,2025-04-02 08:19:09.425491,-0.73,0.75,Negative,Medium
-1138,Customer 138,customer138@example.com,+91-9000000138,8944.55,On-time,2025-08-13 08:19:09.425491,0.13,0.21,Negative,High
-1139,Customer 139,customer139@example.com,+91-9000000139,9447.18,Partial,2025-03-25 08:19:09.425491,0.45,0.25,Negative,Medium
-1140,Customer 140,customer140@example.com,+91-9000000140,5068.18,On-time,2025-02-07 08:19:09.425491,0.34,0.52,Negative,High
-1141,Customer 141,customer141@example.com,+91-9000000141,6277.13,Partial,2025-10-19 08:19:09.425491,-0.5,0.77,Positive,Medium
-1142,Customer 142,customer142@example.com,+91-9000000142,1244.62,Default,2025-10-08 08:19:09.425491,0.05,0.62,Neutral,High
-1143,Customer 143,customer143@example.com,+91-9000000143,3241.13,On-time,2025-03-18 08:19:09.425491,0.08,0.5,Neutral,Low
-1144,Customer 144,customer144@example.com,+91-9000000144,4206.78,On-time,2025-06-30 08:19:09.425491,0.43,0.6,Negative,Low
-1145,Customer 145,customer145@example.com,+91-9000000145,8676.46,Partial,2025-02-18 08:19:09.425491,-0.28,0.76,Neutral,Low
-1146,Customer 146,customer146@example.com,+91-9000000146,2579.51,Partial,2025-01-25 08:19:09.425491,0.6,0.54,Positive,Medium
-1147,Customer 147,customer147@example.com,+91-9000000147,4882.04,Default,2025-03-13 08:19:09.425491,0.26,0.9,Neutral,Low
-1148,Customer 148,customer148@example.com,+91-9000000148,9857.04,Partial,2025-03-10 08:19:09.425491,-0.92,0.95,Neutral,Low
-1149,Customer 149,customer149@example.com,+91-9000000149,5242.9,Late,2025-09-29 08:19:09.425491,0.09,0.92,Neutral,High
-1150,Customer 150,customer150@example.com,+91-9000000150,6167.66,Partial,2025-09-07 08:19:09.425491,0.72,0.75,Negative,Low
-1151,Customer 151,customer151@example.com,+91-9000000151,1294.22,Late,2025-07-28 08:19:09.425491,0.14,0.25,Negative,Low
-1152,Customer 152,customer152@example.com,+91-9000000152,8280.77,On-time,2025-10-27 08:19:09.425491,-0.65,0.39,Neutral,Medium
-1153,Customer 153,customer153@example.com,+91-9000000153,6070.3,On-time,2025-04-14 08:19:09.425491,0.02,0.28,Positive,Medium
-1154,Customer 154,customer154@example.com,+91-9000000154,5496.17,Partial,2025-02-08 08:19:09.425491,0.51,0.66,Neutral,Medium
-1155,Customer 155,customer155@example.com,+91-9000000155,3493.36,Partial,2024-12-23 08:19:09.425491,-0.78,0.32,Positive,Low
-1156,Customer 156,customer156@example.com,+91-9000000156,3110.8,Late,2025-02-28 08:19:09.425491,0.63,0.75,Positive,High
-1157,Customer 157,customer157@example.com,+91-9000000157,4228.52,Default,2025-01-03 08:19:09.425491,-0.67,0.11,Positive,Medium
-1158,Customer 158,customer158@example.com,+91-9000000158,6844.88,Partial,2024-12-14 08:19:09.425491,0.07,0.78,Positive,High
-1159,Customer 159,customer159@example.com,+91-9000000159,8767.02,Late,2025-06-19 08:19:09.425491,-0.23,0.59,Negative,Low
-1160,Customer 160,customer160@example.com,+91-9000000160,5153.18,Partial,2025-03-23 08:19:09.425491,-0.5,0.84,Neutral,Medium
-1161,Customer 161,customer161@example.com,+91-9000000161,6726.21,Late,2025-06-05 08:19:09.425491,0.29,0.43,Positive,High
-1162,Customer 162,customer162@example.com,+91-9000000162,5900.77,On-time,2025-01-19 08:19:09.425491,-0.93,0.62,Positive,High
-1163,Customer 163,customer163@example.com,+91-9000000163,6286.54,Late,2025-07-16 08:19:09.425491,0.52,0.55,Neutral,Low
-1164,Customer 164,customer164@example.com,+91-9000000164,6779.42,Late,2025-01-28 08:19:09.425491,0.05,0.98,Positive,Medium
-1165,Customer 165,customer165@example.com,+91-9000000165,8439.19,Late,2025-02-20 08:19:09.425491,0.75,0.76,Negative,High
-1166,Customer 166,customer166@example.com,+91-9000000166,923.63,Partial,2025-08-08 08:19:09.425491,0.04,0.54,Positive,High
-1167,Customer 167,customer167@example.com,+91-9000000167,7660.46,Default,2025-06-03 08:19:09.425491,-0.93,0.17,Negative,High
-1168,Customer 168,customer168@example.com,+91-9000000168,2512.3,Partial,2025-03-13 08:19:09.425491,-0.71,0.9,Negative,Medium
-1169,Customer 169,customer169@example.com,+91-9000000169,2022.81,Partial,2025-05-28 08:19:09.425491,0.59,0.21,Positive,High
-1170,Customer 170,customer170@example.com,+91-9000000170,5767.32,On-time,2025-07-22 08:19:09.425491,-0.02,0.65,Neutral,Low
-1171,Customer 171,customer171@example.com,+91-9000000171,1047.55,Partial,2025-10-09 08:19:09.425491,-0.12,0.94,Negative,Low
-1172,Customer 172,customer172@example.com,+91-9000000172,8864.74,Default,2025-06-10 08:19:09.425491,-0.36,0.22,Positive,Medium
-1173,Customer 173,customer173@example.com,+91-9000000173,6309.76,Late,2025-02-03 08:19:09.425491,-0.43,0.23,Neutral,Low
-1174,Customer 174,customer174@example.com,+91-9000000174,7261.82,Late,2025-08-10 08:19:09.425491,0.93,0.85,Negative,Low
-1175,Customer 175,customer175@example.com,+91-9000000175,259.68,Partial,2025-08-21 08:19:09.425491,-0.13,0.83,Positive,High
-1176,Customer 176,customer176@example.com,+91-9000000176,5984.88,Partial,2025-01-23 08:19:09.425491,0.77,0.35,Positive,Medium
-1177,Customer 177,customer177@example.com,+91-9000000177,5612.17,On-time,2025-09-06 08:19:09.425491,0.3,0.27,Positive,Low
-1178,Customer 178,customer178@example.com,+91-9000000178,1673.7,Default,2025-04-29 08:19:09.425491,0.72,0.13,Negative,Medium
-1179,Customer 179,customer179@example.com,+91-9000000179,1615.4,Late,2025-08-22 08:19:09.425491,0.7,0.99,Positive,High
-1180,Customer 180,customer180@example.com,+91-9000000180,6985.74,Default,2025-02-05 08:19:09.425491,0.91,0.84,Positive,Medium
-1181,Customer 181,customer181@example.com,+91-9000000181,3255.79,On-time,2025-03-12 08:19:09.425491,0.4,0.9,Neutral,High
-1182,Customer 182,customer182@example.com,+91-9000000182,6950.51,On-time,2025-10-25 08:19:09.425491,0.61,0.51,Negative,High
-1183,Customer 183,customer183@example.com,+91-9000000183,5588.39,Partial,2025-07-09 08:19:09.425491,0.47,0.11,Positive,Low
-1184,Customer 184,customer184@example.com,+91-9000000184,3950.61,Partial,2025-08-20 08:19:09.425491,0.21,0.05,Negative,Medium
-1185,Customer 185,customer185@example.com,+91-9000000185,9258.81,Late,2025-07-20 08:19:09.425491,0.43,0.33,Positive,High
-1186,Customer 186,customer186@example.com,+91-9000000186,8432.53,Partial,2025-01-24 08:19:09.425491,0.43,0.92,Positive,Medium
-1187,Customer 187,customer187@example.com,+91-9000000187,3638.24,Late,2025-05-01 08:19:09.425491,-0.92,0.95,Neutral,High
-1188,Customer 188,customer188@example.com,+91-9000000188,531.56,Late,2025-09-02 08:19:09.425491,0.03,0.84,Positive,Medium
-1189,Customer 189,customer189@example.com,+91-9000000189,3117.2,On-time,2025-07-15 08:19:09.425491,0.59,0.16,Positive,Medium
-1190,Customer 190,customer190@example.com,+91-9000000190,4042.04,Default,2024-11-13 08:19:09.425491,-0.51,0.42,Neutral,High
-1191,Customer 191,customer191@example.com,+91-9000000191,7079.09,Partial,2024-12-12 08:19:09.425491,-0.07,0.25,Positive,High
-1192,Customer 192,customer192@example.com,+91-9000000192,9954.05,Partial,2025-03-17 08:19:09.425491,-0.13,0.21,Positive,High
-1193,Customer 193,customer193@example.com,+91-9000000193,3623.56,Late,2025-10-21 08:19:09.425491,-0.19,0.68,Neutral,Low
-1194,Customer 194,customer194@example.com,+91-9000000194,7649.22,On-time,2025-05-09 08:19:09.425491,-0.76,0.49,Positive,Low
-1195,Customer 195,customer195@example.com,+91-9000000195,5972.45,Partial,2025-02-17 08:19:09.425491,0.05,0.32,Neutral,Medium
-1196,Customer 196,customer196@example.com,+91-9000000196,6947.85,Partial,2025-03-22 08:19:09.425491,-0.11,0.1,Negative,Medium
-1197,Customer 197,customer197@example.com,+91-9000000197,1596.16,Default,2025-01-26 08:19:09.425491,0.33,0.54,Neutral,Medium
-1198,Customer 198,customer198@example.com,+91-9000000198,4048.88,Partial,2025-04-13 08:19:09.425491,0.1,0.35,Neutral,High
-1199,Customer 199,customer199@example.com,+91-9000000199,2484.47,Partial,2025-01-29 08:19:09.425491,-0.94,0.39,Positive,Low
-1200,Customer 200,customer200@example.com,+91-9000000200,3500.21,Partial,2025-09-15 08:19:09.425491,-0.94,0.31,Negative,Medium
-1201,Customer 201,customer201@example.com,+91-9000000201,5179.97,On-time,2025-04-26 08:19:09.425491,0.4,0.39,Positive,Medium
-1202,Customer 202,customer202@example.com,+91-9000000202,6699.58,Partial,2025-02-21 08:19:09.425491,0.42,0.56,Positive,Medium
-1203,Customer 203,customer203@example.com,+91-9000000203,1148.49,Default,2025-10-17 08:19:09.425491,0.92,0.01,Positive,Low
-1204,Customer 204,customer204@example.com,+91-9000000204,1395.86,Late,2025-03-05 08:19:09.425491,0.75,0.85,Positive,Medium
-1205,Customer 205,customer205@example.com,+91-9000000205,3287.61,On-time,2025-10-09 08:19:09.425491,-0.06,0.92,Positive,Low
-1206,Customer 206,customer206@example.com,+91-9000000206,6649.49,Partial,2024-11-26 08:19:09.425491,0.25,0.55,Negative,High
-1207,Customer 207,customer207@example.com,+91-9000000207,8480.41,Default,2025-07-27 08:19:09.425491,-0.09,0.27,Neutral,High
-1208,Customer 208,customer208@example.com,+91-9000000208,5577.25,Default,2025-05-06 08:19:09.425491,-0.55,0.99,Negative,Low
-1209,Customer 209,customer209@example.com,+91-9000000209,8559.08,Late,2025-04-22 08:19:09.425491,-0.25,0.38,Neutral,High
-1210,Customer 210,customer210@example.com,+91-9000000210,3909.89,Default,2024-11-24 08:19:09.425491,-0.79,0.69,Neutral,Low
-1211,Customer 211,customer211@example.com,+91-9000000211,3236.2,Default,2024-11-25 08:19:09.425491,0.33,0.69,Negative,High
-1212,Customer 212,customer212@example.com,+91-9000000212,3607.22,Default,2025-03-12 08:19:09.425491,-0.62,0.43,Positive,Medium
-1213,Customer 213,customer213@example.com,+91-9000000213,1793.71,On-time,2025-10-22 08:19:09.425491,-0.05,0.2,Negative,High
-1214,Customer 214,customer214@example.com,+91-9000000214,8308.22,Partial,2025-06-24 08:19:09.425491,0.93,0.97,Positive,Low
-1215,Customer 215,customer215@example.com,+91-9000000215,3452.84,Default,2025-03-25 08:19:09.425491,-0.94,0.06,Positive,Medium
-1216,Customer 216,customer216@example.com,+91-9000000216,5568.46,Partial,2025-06-22 08:19:09.425491,-0.7,0.49,Neutral,Medium
-1217,Customer 217,customer217@example.com,+91-9000000217,5827.66,Default,2025-01-25 08:19:09.425491,-0.4,0.22,Negative,Low
-1218,Customer 218,customer218@example.com,+91-9000000218,5263.18,Late,2025-01-10 08:19:09.425491,0.88,0.29,Positive,High
-1219,Customer 219,customer219@example.com,+91-9000000219,126.61,Partial,2025-03-23 08:19:09.425491,0.82,0.83,Positive,High
-1220,Customer 220,customer220@example.com,+91-9000000220,9884.62,Default,2025-09-22 08:19:09.425491,-0.68,0.37,Negative,Low
-1221,Customer 221,customer221@example.com,+91-9000000221,9062.88,On-time,2025-05-15 08:19:09.425491,0.96,0.08,Positive,Low
-1222,Customer 222,customer222@example.com,+91-9000000222,2155.6,Default,2025-02-27 08:19:09.425491,0.5,0.2,Neutral,High
-1223,Customer 223,customer223@example.com,+91-9000000223,2995.65,Partial,2025-10-23 08:19:09.425491,0.08,0.86,Neutral,Low
-1224,Customer 224,customer224@example.com,+91-9000000224,5248.1,On-time,2025-09-04 08:19:09.425491,0.86,0.98,Negative,Medium
-1225,Customer 225,customer225@example.com,+91-9000000225,9028.92,Default,2025-03-08 08:19:09.425491,0.76,0.27,Negative,Medium
-1226,Customer 226,customer226@example.com,+91-9000000226,9837.95,Late,2025-10-31 08:19:09.425491,-0.22,0.68,Negative,Medium
-1227,Customer 227,customer227@example.com,+91-9000000227,2649.67,Late,2025-11-06 08:19:09.425491,0.31,0.08,Negative,Medium
-1228,Customer 228,customer228@example.com,+91-9000000228,5687.15,On-time,2025-04-09 08:19:09.425491,0.29,0.72,Neutral,Low
-1229,Customer 229,customer229@example.com,+91-9000000229,8088.99,On-time,2025-07-08 08:19:09.425491,-0.35,0.42,Neutral,Medium
-1230,Customer 230,customer230@example.com,+91-9000000230,4004.26,Default,2025-04-08 08:19:09.425491,-0.64,0.92,Neutral,Low
-1231,Customer 231,customer231@example.com,+91-9000000231,7337.62,Default,2025-02-12 08:19:09.425491,-0.07,0.31,Positive,High
-1232,Customer 232,customer232@example.com,+91-9000000232,1694.58,Late,2024-12-11 08:19:09.425491,-0.47,0.94,Positive,Medium
-1233,Customer 233,customer233@example.com,+91-9000000233,6046.92,On-time,2025-02-15 08:19:09.425491,-0.29,0.5,Positive,Low
-1234,Customer 234,customer234@example.com,+91-9000000234,8672.06,Partial,2025-02-18 08:19:09.425491,0.91,0.35,Neutral,High
-1235,Customer 235,customer235@example.com,+91-9000000235,9836.86,Late,2025-04-05 08:19:09.425491,-0.08,0.65,Negative,High
-1236,Customer 236,customer236@example.com,+91-9000000236,885.72,Default,2025-01-17 08:19:09.425491,0.37,0.25,Negative,High
-1237,Customer 237,customer237@example.com,+91-9000000237,4340.64,Late,2025-10-25 08:19:09.425491,-0.33,0.23,Positive,Medium
-1238,Customer 238,customer238@example.com,+91-9000000238,2124.97,Default,2024-12-18 08:19:09.425491,0.99,0.2,Positive,Low
-1239,Customer 239,customer239@example.com,+91-9000000239,4561.3,Default,2025-06-27 08:19:09.425491,0.32,0.96,Negative,Medium
-1240,Customer 240,customer240@example.com,+91-9000000240,5522.86,On-time,2025-04-21 08:19:09.425491,-0.61,0.49,Positive,Low
-1241,Customer 241,customer241@example.com,+91-9000000241,1023.93,Default,2025-04-14 08:19:09.425491,-0.8,0.75,Positive,Low
-1242,Customer 242,customer242@example.com,+91-9000000242,3038.92,On-time,2025-03-26 08:19:09.425491,0.89,0.47,Neutral,Medium
-1243,Customer 243,customer243@example.com,+91-9000000243,9283.08,On-time,2025-09-23 08:19:09.425491,0.89,0.59,Positive,High
-1244,Customer 244,customer244@example.com,+91-9000000244,5733.14,On-time,2025-02-21 08:19:09.425491,0.24,0.58,Neutral,Medium
-1245,Customer 245,customer245@example.com,+91-9000000245,4628.38,Late,2024-11-18 08:19:09.425491,-0.97,0.98,Neutral,High
-1246,Customer 246,customer246@example.com,+91-9000000246,7559.91,Partial,2025-10-12 08:19:09.425491,-0.55,0.67,Positive,High
-1247,Customer 247,customer247@example.com,+91-9000000247,7444.44,Default,2025-09-22 08:19:09.425491,0.6,0.24,Neutral,Low
-1248,Customer 248,customer248@example.com,+91-9000000248,580.93,Late,2025-02-20 08:19:09.425491,0.75,0.02,Neutral,High
-1249,Customer 249,customer249@example.com,+91-9000000249,7116.1,Late,2025-05-21 08:19:09.425491,-0.09,0.22,Neutral,High
-1250,Customer 250,customer250@example.com,+91-9000000250,8408.51,Partial,2024-12-20 08:19:09.425491,-0.27,0.46,Negative,High
-1251,Customer 251,customer251@example.com,+91-9000000251,1742.79,On-time,2024-12-15 08:19:09.425491,-0.45,0.39,Positive,High
-1252,Customer 252,customer252@example.com,+91-9000000252,7831.88,On-time,2025-09-12 08:19:09.425491,-0.77,0.81,Negative,Medium
-1253,Customer 253,customer253@example.com,+91-9000000253,2936.71,Late,2025-04-09 08:19:09.425491,-0.77,0.79,Neutral,High
-1254,Customer 254,customer254@example.com,+91-9000000254,3134.05,On-time,2025-07-10 08:19:09.425491,0.91,0.09,Neutral,High
-1255,Customer 255,customer255@example.com,+91-9000000255,6686.09,Late,2025-10-21 08:19:09.425491,0.62,0.95,Negative,Medium
-1256,Customer 256,customer256@example.com,+91-9000000256,1202.78,Late,2025-02-08 08:19:09.425491,-0.67,0.53,Neutral,High
-1257,Customer 257,customer257@example.com,+91-9000000257,6682.24,On-time,2024-11-15 08:19:09.425491,-0.59,0.6,Neutral,High
-1258,Customer 258,customer258@example.com,+91-9000000258,8889.78,Default,2024-11-19 08:19:09.425491,0.31,0.41,Positive,High
-1259,Customer 259,customer259@example.com,+91-9000000259,6993.48,On-time,2025-07-27 08:19:09.425491,0.53,0.65,Neutral,Medium
-1260,Customer 260,customer260@example.com,+91-9000000260,4459.25,On-time,2025-10-14 08:19:09.425491,0.62,0.87,Negative,Low
-1261,Customer 261,customer261@example.com,+91-9000000261,4438.32,On-time,2025-04-30 08:19:09.425491,-0.67,0.67,Positive,Low
-1262,Customer 262,customer262@example.com,+91-9000000262,7674.45,On-time,2025-03-27 08:19:09.425491,0.97,0.97,Neutral,Medium
-1263,Customer 263,customer263@example.com,+91-9000000263,5699.86,Partial,2025-05-28 08:19:09.425491,-0.54,0.7,Positive,Low
-1264,Customer 264,customer264@example.com,+91-9000000264,940.55,On-time,2025-09-20 08:19:09.425491,0.18,0.82,Negative,Low
-1265,Customer 265,customer265@example.com,+91-9000000265,5868.44,Default,2025-07-07 08:19:09.425491,0.18,0.05,Neutral,Medium
-1266,Customer 266,customer266@example.com,+91-9000000266,8166.95,Default,2025-02-04 08:19:09.425491,0.93,0.67,Neutral,Medium
-1267,Customer 267,customer267@example.com,+91-9000000267,3436.96,Partial,2025-08-20 08:19:09.425491,0.32,0.65,Neutral,Low
-1268,Customer 268,customer268@example.com,+91-9000000268,9283.01,Default,2024-12-30 08:19:09.425491,0.17,0.1,Negative,Low
-1269,Customer 269,customer269@example.com,+91-9000000269,7532.1,Default,2025-01-10 08:19:09.425491,0.04,0.84,Positive,High
-1270,Customer 270,customer270@example.com,+91-9000000270,5783.23,Late,2025-06-22 08:19:09.425491,0.53,0.61,Negative,Low
-1271,Customer 271,customer271@example.com,+91-9000000271,7541.28,Default,2025-02-06 08:19:09.425491,-0.79,0.1,Neutral,High
-1272,Customer 272,customer272@example.com,+91-9000000272,883.57,Late,2025-07-26 08:19:09.425491,-1.0,0.59,Negative,Low
-1273,Customer 273,customer273@example.com,+91-9000000273,8607.95,On-time,2025-03-18 08:19:09.425491,0.9,0.48,Neutral,High
-1274,Customer 274,customer274@example.com,+91-9000000274,8232.89,Partial,2025-02-20 08:19:09.425491,-0.0,0.23,Negative,Low
-1275,Customer 275,customer275@example.com,+91-9000000275,9107.73,Default,2025-11-10 08:19:09.425491,-0.34,0.02,Neutral,Medium
-1276,Customer 276,customer276@example.com,+91-9000000276,1373.45,On-time,2024-11-25 08:19:09.425491,-0.26,0.37,Negative,Medium
-1277,Customer 277,customer277@example.com,+91-9000000277,909.62,On-time,2025-07-04 08:19:09.425491,0.61,0.62,Negative,Low
-1278,Customer 278,customer278@example.com,+91-9000000278,1470.31,Late,2024-11-25 08:19:09.425491,-0.24,0.33,Positive,Low
-1279,Customer 279,customer279@example.com,+91-9000000279,4053.85,Late,2025-08-15 08:19:09.425491,0.54,0.31,Negative,High
-1280,Customer 280,customer280@example.com,+91-9000000280,4300.64,On-time,2025-02-02 08:19:09.425491,-0.12,0.75,Negative,High
-1281,Customer 281,customer281@example.com,+91-9000000281,5665.96,Partial,2024-12-13 08:19:09.425491,0.69,0.76,Neutral,High
-1282,Customer 282,customer282@example.com,+91-9000000282,1310.21,Late,2025-07-05 08:19:09.425491,-0.85,0.72,Positive,Low
-1283,Customer 283,customer283@example.com,+91-9000000283,2093.86,Default,2025-08-05 08:19:09.425491,-0.04,0.1,Negative,Low
-1284,Customer 284,customer284@example.com,+91-9000000284,8135.28,Late,2025-07-16 08:19:09.425491,-0.07,0.52,Positive,Medium
-1285,Customer 285,customer285@example.com,+91-9000000285,4733.08,Default,2024-11-29 08:19:09.425491,-0.47,0.56,Neutral,Low
-1286,Customer 286,customer286@example.com,+91-9000000286,8098.59,Late,2025-02-26 08:19:09.425491,0.89,0.74,Positive,Medium
-1287,Customer 287,customer287@example.com,+91-9000000287,173.52,Partial,2025-04-24 08:19:09.425491,0.81,0.9,Neutral,Medium
-1288,Customer 288,customer288@example.com,+91-9000000288,5560.77,Partial,2025-02-23 08:19:09.425491,-0.11,0.37,Positive,Medium
-1289,Customer 289,customer289@example.com,+91-9000000289,9326.13,Partial,2025-09-02 08:19:09.425491,-0.81,0.43,Neutral,High
-1290,Customer 290,customer290@example.com,+91-9000000290,5863.54,Default,2024-12-28 08:19:09.425491,-0.59,0.73,Neutral,Medium
-1291,Customer 291,customer291@example.com,+91-9000000291,2140.35,Default,2025-06-22 08:19:09.425491,-0.46,0.66,Positive,High
-1292,Customer 292,customer292@example.com,+91-9000000292,7205.8,Late,2025-11-06 08:19:09.425491,-0.03,0.56,Positive,Low
-1293,Customer 293,customer293@example.com,+91-9000000293,3851.96,Default,2025-10-06 08:19:09.425491,-0.32,0.35,Neutral,High
-1294,Customer 294,customer294@example.com,+91-9000000294,6717.0,Late,2025-01-31 08:19:09.425491,0.55,0.2,Neutral,Medium
-1295,Customer 295,customer295@example.com,+91-9000000295,390.27,Late,2024-11-11 08:19:09.425491,-0.05,0.18,Neutral,Medium
-1296,Customer 296,customer296@example.com,+91-9000000296,6395.41,Default,2025-11-03 08:19:09.425491,0.74,0.08,Neutral,High
-1297,Customer 297,customer297@example.com,+91-9000000297,418.76,Partial,2025-09-29 08:19:09.425491,0.99,0.08,Negative,Medium
-1298,Customer 298,customer298@example.com,+91-9000000298,7473.33,Partial,2025-10-12 08:19:09.425491,-0.56,0.85,Positive,High
-1299,Customer 299,customer299@example.com,+91-9000000299,4781.84,Partial,2025-04-11 08:19:09.425491,0.22,0.38,Neutral,Medium
-1300,Customer 300,customer300@example.com,+91-9000000300,1305.37,Default,2025-08-09 08:19:09.425491,0.7,0.06,Negative,High
+CustomerID,Name,Email,PhoneNumber,InvoiceAmount,InvoiceDate,DueDate,PaymentDate,AvgOrders60Days,RemindersCount,CreditLimit,CreditUsed
+CUST001,Acme Corporation,acme@example.com,+1-555-0101,45000,2024-10-01,2024-10-31,2024-11-15,18.5,1,100000,45000
+CUST002,GlobalTech Industries,globaltech@example.com,+1-555-0102,78500,2024-09-15,2024-10-15,2024-12-10,3.2,4,80000,75000
+CUST003,Sunrise Retail,sunrise@example.com,+1-555-0103,12300,2024-11-01,2024-12-01,2024-12-02,25.0,0,50000,12000
+CUST004,Pacific Traders,pacific@example.com,+1-555-0104,156000,2024-08-01,2024-09-01,,2.0,5,150000,148000
+CUST005,Mountain View LLC,mountainview@example.com,+1-555-0105,8900,2024-11-15,2024-12-15,2024-12-10,22.5,0,30000,8000
+CUST006,Delta Manufacturing,delta@example.com,+1-555-0106,67800,2024-10-10,2024-11-10,2024-11-25,8.5,2,100000,68000
+CUST007,Coastal Imports,coastal@example.com,+1-555-0107,234000,2024-07-01,2024-08-01,,1.5,6,200000,195000
+CUST008,Summit Solutions,summit@example.com,+1-555-0108,5600,2024-11-20,2024-12-20,2024-12-18,30.0,0,25000,5000
+CUST009,Valley Enterprises,valley@example.com,+1-555-0109,89000,2024-09-01,2024-10-01,2024-10-05,15.0,1,120000,85000
+CUST010,Northern Logistics,northern@example.com,+1-555-0110,43500,2024-10-20,2024-11-20,2024-12-15,6.5,3,80000,72000
+CUST011,Eastern Supplies,eastern@example.com,+1-555-0111,28900,2024-11-05,2024-12-05,2024-12-08,19.0,0,60000,28000
+CUST012,Western Distribution,western@example.com,+1-555-0112,112000,2024-08-15,2024-09-15,,4.0,4,100000,98000
+CUST013,Central Services,central@example.com,+1-555-0113,7200,2024-11-25,2024-12-25,2024-12-20,28.0,0,20000,7000
+CUST014,Premier Holdings,premier@example.com,+1-555-0114,345000,2024-06-01,2024-07-01,,0.5,7,300000,295000
+CUST015,Atlantic Partners,atlantic@example.com,+1-555-0115,18900,2024-11-10,2024-12-10,2024-12-09,21.0,0,40000,18000
+CUST016,Midwest Manufacturing,midwest@example.com,+1-555-0116,56700,2024-10-05,2024-11-05,2024-11-20,10.5,2,90000,58000
+CUST017,Southern Trading,southern@example.com,+1-555-0117,98700,2024-09-20,2024-10-20,,7.0,3,100000,92000
+CUST018,Crown Industries,crown@example.com,+1-555-0118,4500,2024-11-28,2024-12-28,2024-12-26,35.0,0,15000,4000
+CUST019,Diamond Corp,diamond@example.com,+1-555-0119,187000,2024-07-15,2024-08-15,,3.5,5,180000,175000
+CUST020,Elite Services,elite@example.com,+1-555-0120,23400,2024-11-12,2024-12-12,2024-12-11,17.5,0,50000,22000
+CUST021,First Choice Ltd,firstchoice@example.com,+1-555-0121,67000,2024-10-08,2024-11-08,2024-11-12,12.0,1,100000,65000
+CUST022,Golden Gate Co,goldengate@example.com,+1-555-0122,145000,2024-08-25,2024-09-25,,2.5,4,140000,138000
+CUST023,Harbor Industries,harbor@example.com,+1-555-0123,9800,2024-11-22,2024-12-22,2024-12-21,26.0,0,35000,9000
+CUST024,Imperial Trading,imperial@example.com,+1-555-0124,278000,2024-06-15,2024-07-15,,1.0,6,250000,248000
+CUST025,Jupiter Enterprises,jupiter@example.com,+1-555-0125,15600,2024-11-08,2024-12-08,2024-12-06,20.0,0,45000,15000
+CUST026,Kingston Corp,kingston@example.com,+1-555-0126,78900,2024-09-30,2024-10-30,2024-11-15,9.0,2,100000,80000
+CUST027,Liberty Holdings,liberty@example.com,+1-555-0127,54300,2024-10-15,2024-11-15,2024-11-18,14.0,1,80000,52000
+CUST028,Metro Solutions,metro@example.com,+1-555-0128,123000,2024-08-10,2024-09-10,,5.5,3,120000,115000
+CUST029,Neptune Inc,neptune@example.com,+1-555-0129,6700,2024-11-26,2024-12-26,2024-12-24,32.0,0,22000,6500
+CUST030,Omega Partners,omega@example.com,+1-555-0130,89500,2024-09-12,2024-10-12,2024-10-25,11.0,2,110000,88000
+CUST031,Phoenix Group,phoenix@example.com,+1-555-0131,34500,2024-10-28,2024-11-28,2024-12-05,16.0,1,60000,33000
+CUST032,Quantum Tech,quantum@example.com,+1-555-0132,198000,2024-07-20,2024-08-20,,4.2,5,190000,185000
+CUST033,Royal Industries,royal@example.com,+1-555-0133,11200,2024-11-18,2024-12-18,2024-12-17,23.5,0,38000,10500
+CUST034,Stellar Corp,stellar@example.com,+1-555-0134,267000,2024-06-25,2024-07-25,,0.8,7,260000,255000
+CUST035,Titan Enterprises,titan@example.com,+1-555-0135,19800,2024-11-06,2024-12-06,2024-12-04,18.0,0,48000,18500
+CUST036,United Trading,united@example.com,+1-555-0136,72400,2024-10-02,2024-11-02,2024-11-08,13.5,1,95000,70000
+CUST037,Victory Holdings,victory@example.com,+1-555-0137,56800,2024-10-18,2024-11-18,2024-12-01,8.0,2,85000,58000
+CUST038,Westward Inc,westward@example.com,+1-555-0138,134000,2024-08-05,2024-09-05,,6.0,4,130000,125000
+CUST039,Xenon Solutions,xenon@example.com,+1-555-0139,8400,2024-11-24,2024-12-24,2024-12-23,29.0,0,28000,8000
+CUST040,Yankee Corp,yankee@example.com,+1-555-0140,95600,2024-09-08,2024-10-08,2024-10-20,10.0,2,105000,93000
+CUST041,Zenith Partners,zenith@example.com,+1-555-0141,41200,2024-10-22,2024-11-22,2024-11-25,15.5,1,70000,40000
+CUST042,Alpha Systems,alphasys@example.com,+1-555-0142,167000,2024-07-28,2024-08-28,,3.0,5,160000,158000
+CUST043,Beta Technologies,betatech@example.com,+1-555-0143,14300,2024-11-14,2024-12-14,2024-12-13,24.0,0,42000,14000
+CUST044,Gamma Industries,gamma@example.com,+1-555-0144,223000,2024-06-30,2024-07-30,,1.2,6,220000,215000
+CUST045,Epsilon Corp,epsilon@example.com,+1-555-0145,17500,2024-11-09,2024-12-09,2024-12-07,19.5,0,46000,17000
+CUST046,Zeta Holdings,zeta@example.com,+1-555-0146,83200,2024-09-25,2024-10-25,2024-11-10,9.5,2,100000,82000
+CUST047,Eta Solutions,eta@example.com,+1-555-0147,48700,2024-10-12,2024-11-12,2024-11-14,14.5,1,75000,47000
+CUST048,Theta Trading,theta@example.com,+1-555-0148,178000,2024-08-01,2024-09-01,,4.5,4,170000,165000
+CUST049,Iota Enterprises,iota@example.com,+1-555-0149,7900,2024-11-27,2024-12-27,2024-12-25,31.0,0,24000,7500
+CUST050,Kappa Corp,kappa@example.com,+1-555-0150,102000,2024-09-05,2024-10-05,2024-10-18,11.5,2,115000,100000
+CUST051,Lambda Industries,lambda@example.com,+1-555-0151,29800,2024-10-30,2024-11-30,2024-12-03,17.0,1,55000,28500
+CUST052,Mu Holdings,mu@example.com,+1-555-0152,189000,2024-07-10,2024-08-10,,3.8,5,180000,175000
+CUST053,Nu Partners,nu@example.com,+1-555-0153,10500,2024-11-19,2024-12-19,2024-12-18,25.5,0,36000,10000
+CUST054,Xi Trading,xi@example.com,+1-555-0154,256000,2024-06-20,2024-07-20,,0.9,6,250000,245000
+CUST055,Omicron Corp,omicron@example.com,+1-555-0155,21300,2024-11-11,2024-12-11,2024-12-10,20.5,0,52000,20500
+CUST056,Pi Enterprises,pi@example.com,+1-555-0156,69500,2024-10-06,2024-11-06,2024-11-10,12.5,1,90000,68000
+CUST057,Rho Solutions,rho@example.com,+1-555-0157,51200,2024-10-19,2024-11-19,2024-11-28,8.5,2,78000,52000
+CUST058,Sigma Industries,sigma@example.com,+1-555-0158,156000,2024-08-08,2024-09-08,,5.0,4,150000,145000
+CUST059,Tau Holdings,tau@example.com,+1-555-0159,9100,2024-11-23,2024-12-23,2024-12-22,27.5,0,32000,8800
+CUST060,Upsilon Corp,upsilon@example.com,+1-555-0160,87300,2024-09-18,2024-10-18,2024-10-28,10.5,2,100000,86000
+CUST061,Phi Partners,phi@example.com,+1-555-0161,38900,2024-10-25,2024-11-25,2024-11-27,16.5,1,65000,38000
+CUST062,Chi Trading,chi@example.com,+1-555-0162,212000,2024-07-05,2024-08-05,,2.8,5,200000,195000
+CUST063,Psi Enterprises,psi@example.com,+1-555-0163,13100,2024-11-16,2024-12-16,2024-12-15,22.5,0,40000,12500
+CUST064,Aurora Corp,aurora@example.com,+1-555-0164,298000,2024-06-10,2024-07-10,,0.6,7,280000,275000
+CUST065,Blaze Industries,blaze@example.com,+1-555-0165,16200,2024-11-07,2024-12-07,2024-12-05,21.5,0,44000,16000
+CUST066,Cascade Holdings,cascade@example.com,+1-555-0166,74800,2024-09-28,2024-10-28,2024-11-12,9.2,2,95000,73000
+CUST067,Dawn Solutions,dawn@example.com,+1-555-0167,59200,2024-10-14,2024-11-14,2024-11-17,13.8,1,82000,58000
+CUST068,Echo Trading,echo@example.com,+1-555-0168,143000,2024-08-12,2024-09-12,,5.8,3,140000,135000
+CUST069,Fusion Corp,fusion@example.com,+1-555-0169,7600,2024-11-25,2024-12-25,2024-12-24,33.0,0,26000,7200
+CUST070,Glacier Enterprises,glacier@example.com,+1-555-0170,91800,2024-09-10,2024-10-10,2024-10-22,11.2,2,108000,90000
+CUST071,Horizon Partners,horizon@example.com,+1-555-0171,32600,2024-10-27,2024-11-27,2024-11-30,15.8,1,58000,31500
+CUST072,Ignite Industries,ignite@example.com,+1-555-0172,201000,2024-07-18,2024-08-18,,3.5,5,195000,190000
+CUST073,Jade Holdings,jade@example.com,+1-555-0173,11800,2024-11-17,2024-12-17,2024-12-16,24.5,0,39000,11200
+CUST074,Kinetic Corp,kinetic@example.com,+1-555-0174,245000,2024-06-22,2024-07-22,,1.1,6,240000,235000
+CUST075,Lunar Solutions,lunar@example.com,+1-555-0175,20100,2024-11-10,2024-12-10,2024-12-09,19.8,0,50000,19500
+CUST076,Maverick Trading,maverick@example.com,+1-555-0176,81500,2024-09-22,2024-10-22,2024-11-05,9.8,2,98000,80000
+CUST077,Nexus Enterprises,nexus@example.com,+1-555-0177,46500,2024-10-16,2024-11-16,2024-11-19,14.2,1,72000,45000
+CUST078,Onyx Partners,onyx@example.com,+1-555-0178,168000,2024-08-03,2024-09-03,,4.8,4,165000,160000
+CUST079,Pulse Corp,pulse@example.com,+1-555-0179,8200,2024-11-26,2024-12-26,2024-12-24,30.5,0,29000,7800
+CUST080,Quest Industries,quest@example.com,+1-555-0180,98200,2024-09-15,2024-10-15,2024-10-25,10.8,2,112000,96000
+CUST081,Radiant Holdings,radiant@example.com,+1-555-0181,35800,2024-10-24,2024-11-24,2024-11-26,16.2,1,62000,35000
+CUST082,Spark Solutions,spark@example.com,+1-555-0182,176000,2024-07-22,2024-08-22,,4.0,5,170000,165000
+CUST083,Thrive Trading,thrive@example.com,+1-555-0183,12600,2024-11-15,2024-12-15,2024-12-14,23.2,0,41000,12000
+CUST084,Unity Corp,unity@example.com,+1-555-0184,267000,2024-06-18,2024-07-18,,0.7,7,260000,255000
+CUST085,Vertex Enterprises,vertex@example.com,+1-555-0185,18400,2024-11-08,2024-12-08,2024-12-06,20.2,0,47000,18000
+CUST086,Wave Partners,wave@example.com,+1-555-0186,77200,2024-09-26,2024-10-26,2024-11-08,9.5,2,96000,76000
+CUST087,Apex Industries,apex@example.com,+1-555-0187,53800,2024-10-17,2024-11-17,2024-11-20,13.5,1,80000,52500
+CUST088,Bright Holdings,bright@example.com,+1-555-0188,152000,2024-08-06,2024-09-06,,5.2,4,148000,145000
+CUST089,Clarity Corp,clarity@example.com,+1-555-0189,9500,2024-11-24,2024-12-24,2024-12-23,28.5,0,33000,9000
+CUST090,Drive Solutions,drive@example.com,+1-555-0190,94500,2024-09-12,2024-10-12,2024-10-24,11.0,2,110000,92000
+CUST091,Elevate Trading,elevate@example.com,+1-555-0191,31200,2024-10-29,2024-11-29,2024-12-02,15.5,1,56000,30500
+CUST092,Frontier Enterprises,frontier@example.com,+1-555-0192,184000,2024-07-25,2024-08-25,,3.2,5,180000,175000
+CUST093,Gateway Partners,gateway@example.com,+1-555-0193,10900,2024-11-18,2024-12-18,2024-12-17,25.0,0,37000,10500
+CUST094,Haven Corp,haven@example.com,+1-555-0194,232000,2024-06-28,2024-07-28,,1.3,6,225000,220000
+CUST095,Impact Industries,impact@example.com,+1-555-0195,22600,2024-11-11,2024-12-11,2024-12-10,18.5,0,54000,22000
+CUST096,Journey Holdings,journey@example.com,+1-555-0196,86400,2024-09-20,2024-10-20,2024-11-02,10.2,2,102000,85000
+CUST097,Keystone Solutions,keystone@example.com,+1-555-0197,62100,2024-10-11,2024-11-11,2024-11-14,12.8,1,88000,61000
+CUST098,Legacy Trading,legacy@example.com,+1-555-0198,139000,2024-08-09,2024-09-09,,5.5,4,135000,130000
+CUST099,Matrix Corp,matrix@example.com,+1-555-0199,8800,2024-11-27,2024-12-27,2024-12-25,31.5,0,30000,8500
+CUST100,Noble Enterprises,noble@example.com,+1-555-0200,108000,2024-09-08,2024-10-08,2024-10-20,10.5,2,118000,105000

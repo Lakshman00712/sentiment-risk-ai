@@ -3,8 +3,9 @@ import { ClientData } from "@/utils/csvParser";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
-import { Mail, Phone, DollarSign, Calendar, MessageSquare, Send } from "lucide-react";
+import { Mail, Phone, DollarSign, Calendar, MessageSquare, Send, Clock, CreditCard, Bell, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface AlertDetailDialogProps {
@@ -38,7 +39,7 @@ const AlertDetailDialog = ({ open, onOpenChange, client }: AlertDetailDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
             Action Required: {client.name}
@@ -54,7 +55,7 @@ const AlertDetailDialog = ({ open, onOpenChange, client }: AlertDetailDialogProp
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Client Information</h3>
               <Badge variant={getRiskColor(client.riskCategory) as any}>
-                {client.riskCategory} Risk
+                {client.riskCategory} Risk ({client.riskScore}/100)
               </Badge>
             </div>
 
@@ -83,8 +84,8 @@ const AlertDetailDialog = ({ open, onOpenChange, client }: AlertDetailDialogProp
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground">Last Payment</p>
-                  <p className="text-sm font-medium">{new Date(client.lastPaymentDate).toLocaleDateString()}</p>
+                  <p className="text-xs text-muted-foreground">Due Date</p>
+                  <p className="text-sm font-medium">{client.dueDate ? new Date(client.dueDate).toLocaleDateString() : 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -93,29 +94,56 @@ const AlertDetailDialog = ({ open, onOpenChange, client }: AlertDetailDialogProp
           {/* Risk Indicators */}
           <div className="space-y-3">
             <h3 className="font-semibold">Risk Indicators</h3>
-            <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+            <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" /> Days Past Due
+                  </span>
+                  <span className={client.daysPastDue >= 90 ? "text-destructive font-medium" : client.daysPastDue >= 30 ? "text-warning font-medium" : "font-medium"}>
+                    {client.daysPastDue} days
+                  </span>
+                </div>
+                <Progress value={Math.min(client.daysPastDue / 90 * 100, 100)} className="h-2" />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <CreditCard className="h-3 w-3" /> Credit Utilization
+                  </span>
+                  <span className={client.creditUtilization >= 85 ? "text-destructive font-medium" : client.creditUtilization >= 70 ? "text-warning font-medium" : "font-medium"}>
+                    {client.creditUtilization}%
+                  </span>
+                </div>
+                <Progress value={client.creditUtilization} className="h-2" />
+              </div>
+
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Sentiment Score:</span>
-                <span className={client.sentimentScore < 0 ? "text-destructive font-medium" : "text-success font-medium"}>
-                  {client.sentimentScore.toFixed(2)}
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Bell className="h-3 w-3" /> Reminders Sent
                 </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Behavior Score:</span>
-                <span className="font-medium">{client.behaviorScore}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Payment History:</span>
-                <Badge variant={client.paymentHistory === "On-time" ? "success" as any : "warning" as any}>
-                  {client.paymentHistory}
+                <Badge variant={client.remindersCount >= 3 ? "destructive" as any : client.remindersCount >= 2 ? "warning" as any : "secondary"}>
+                  {client.remindersCount}
                 </Badge>
               </div>
-              {client.socialMediaSignal && (
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Social Signal:</span>
-                  <p className="mt-1 text-xs p-2 bg-background rounded">{client.socialMediaSignal}</p>
-                </div>
-              )}
+
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <ShoppingCart className="h-3 w-3" /> Avg Orders (60 days)
+                </span>
+                <span className={client.avgOrders60Days < 5 ? "text-destructive font-medium" : "font-medium"}>
+                  {client.avgOrders60Days.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Risk Rationale */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Risk Analysis</h3>
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground">{client.riskRationale}</p>
             </div>
           </div>
 

@@ -13,39 +13,49 @@ interface CSVFormatDialogProps {
 
 const CSVFormatDialog = ({ open, onOpenChange }: CSVFormatDialogProps) => {
   const columns = [
-    "CustomerID",
-    "Name",
-    "Email",
-    "PhoneNumber",
-    "InvoiceAmount",
-    "PaymentHistory",
-    "LastPaymentDate",
-    "SentimentScore",
-    "BehaviorScore",
-    "RiskCategory",
+    { name: "CustomerID", description: "Unique customer identifier" },
+    { name: "Name", description: "Customer/company name" },
+    { name: "Email", description: "Contact email address" },
+    { name: "PhoneNumber", description: "Contact phone number" },
+    { name: "InvoiceAmount", description: "Outstanding invoice amount" },
+    { name: "InvoiceDate", description: "Date of invoice (YYYY-MM-DD)" },
+    { name: "DueDate", description: "Payment due date (YYYY-MM-DD)" },
+    { name: "PaymentDate", description: "Actual payment date (empty if unpaid)" },
+    { name: "AvgOrders60Days", description: "Average orders in last 60 days" },
+    { name: "RemindersCount", description: "Number of payment reminders sent" },
+    { name: "CreditLimit", description: "Customer's credit limit" },
+    { name: "CreditUsed", description: "Current credit utilized" },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Required CSV Format</DialogTitle>
           <DialogDescription>
-            Your CSV file should include the following columns for accurate analysis
+            Your CSV file should include the following 11 columns for accurate risk analysis
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
-            {columns.map((column) => (
-              <div key={column} className="flex items-center gap-2 text-sm">
-                <div className="h-1.5 w-1.5 rounded-full bg-orange" />
-                <span className="font-mono text-xs">{column}</span>
+          <div className="space-y-2 max-h-80 overflow-y-auto">
+            {columns.map((column, index) => (
+              <div key={column.name} className="flex items-start gap-3 text-sm p-2 rounded bg-muted/30">
+                <div className="h-5 w-5 rounded-full bg-orange/20 text-orange flex items-center justify-center text-xs font-medium shrink-0">
+                  {index + 1}
+                </div>
+                <div>
+                  <span className="font-mono text-xs font-medium">{column.name}</span>
+                  <p className="text-xs text-muted-foreground">{column.description}</p>
+                </div>
               </div>
             ))}
           </div>
-          <div className="p-3 bg-muted rounded-lg">
+          <div className="p-3 bg-muted rounded-lg space-y-2">
             <p className="text-xs text-muted-foreground">
-              <strong>Tip:</strong> Ensure dates are in YYYY-MM-DD format and numeric fields contain valid numbers.
+              <strong>Calculated Fields:</strong> The system will automatically calculate DaysPastDue, CreditUtilization, RiskScore, RiskCategory, and RiskRationale.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              <strong>Tip:</strong> Ensure dates are in YYYY-MM-DD format. Leave PaymentDate empty for unpaid invoices.
             </p>
           </div>
         </div>
