@@ -104,16 +104,6 @@ const ClientsList = ({ filter, clientData = [] }: ClientsListProps) => {
                     </p>
                   </div>
                   
-                  <div className="w-32">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs text-muted-foreground">Risk Score</p>
-                      <p className="text-xs font-semibold text-foreground">{client.riskScore}/100</p>
-                    </div>
-                    <Progress 
-                      value={client.riskScore} 
-                      className="h-2"
-                    />
-                  </div>
                   
                   <div className="w-32">
                     <div className="flex items-center justify-between mb-1">
