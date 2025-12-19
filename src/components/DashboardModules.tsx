@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,6 +17,13 @@ import {
   ChevronUp,
   Calendar,
   RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  Users,
+  Clock,
+  Activity,
 } from "lucide-react";
 import MetricsCard from "@/components/MetricsCard";
 import ClientsList from "@/components/ClientsList";
@@ -150,7 +158,7 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
   return (
     <>
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
           <TabsTrigger value="summary">
             <BarChart3 className="h-4 w-4 mr-2" />
             Summary
@@ -158,6 +166,10 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
           <TabsTrigger value="reports">
             <FileText className="h-4 w-4 mr-2" />
             Reports
+          </TabsTrigger>
+          <TabsTrigger value="sentiment">
+            <Activity className="h-4 w-4 mr-2" />
+            Sentiment
           </TabsTrigger>
           <TabsTrigger value="data">
             <Database className="h-4 w-4 mr-2" />
@@ -268,7 +280,6 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
                       <div className="flex items-center gap-2">
                         <div className={`h-2 w-2 rounded-full ${client.riskCategory === "High" ? "bg-destructive" : "bg-warning"}`} />
                         <span className="font-medium">{client.name}</span>
-                        <span className="text-muted-foreground text-xs">Score: {client.riskScore}</span>
                       </div>
                       <Button size="sm" variant="outline" onClick={() => onAlertClick(client)}>
                         Action
@@ -318,6 +329,204 @@ const DashboardModules = ({ clientData, onRiskCategoryClick, onAlertClick }: Das
           </Card>
           
           <ClientsList filter="all" clientData={filteredData} />
+        </TabsContent>
+
+        {/* Sentiment & Trends Tab */}
+        <TabsContent value="sentiment" className="space-y-6">
+          <h3 className="text-lg font-semibold">Sentiment & Trends</h3>
+          
+          {/* Portfolio Health Indicators */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Risk Trend</p>
+                    <p className="text-2xl font-bold text-success">↓ Improving</p>
+                    <p className="text-xs text-muted-foreground mt-1">-5.2% vs last month</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
+                    <TrendingDown className="h-6 w-6 text-success" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Collection Efficiency</p>
+                    <p className="text-2xl font-bold text-foreground">78%</p>
+                    <p className="text-xs text-success mt-1">+3.1% vs last month</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <DollarSign className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Avg Days to Payment</p>
+                    <p className="text-2xl font-bold text-foreground">32 days</p>
+                    <p className="text-xs text-warning mt-1">+2 days vs last month</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-warning" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Risk Movement Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Risk Movement Summary</CardTitle>
+              <CardDescription>Client risk category changes this period</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                      <ArrowUpRight className="h-5 w-5 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Moved to High Risk</p>
+                      <p className="text-xl font-bold text-destructive">
+                        {clientData.filter(c => c.riskCategory === "High").length > 3 ? 3 : clientData.filter(c => c.riskCategory === "High").length} clients
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-4 rounded-lg border border-success/30 bg-success/5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
+                      <ArrowDownRight className="h-5 w-5 text-success" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Improved from High Risk</p>
+                      <p className="text-xl font-bold text-success">
+                        {clientData.filter(c => c.riskCategory === "Low").length > 5 ? 5 : clientData.filter(c => c.riskCategory === "Low").length} clients
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Aging Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Aging Analysis</CardTitle>
+              <CardDescription>AR breakdown by age buckets</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { label: "Current (0-30 days)", count: clientData.filter(c => c.daysPastDue <= 30).length, color: "bg-success" },
+                  { label: "31-60 days", count: clientData.filter(c => c.daysPastDue > 30 && c.daysPastDue <= 60).length, color: "bg-warning" },
+                  { label: "61-90 days", count: clientData.filter(c => c.daysPastDue > 60 && c.daysPastDue <= 90).length, color: "bg-orange" },
+                  { label: "90+ days", count: clientData.filter(c => c.daysPastDue > 90).length, color: "bg-destructive" },
+                ].map((bucket) => (
+                  <div key={bucket.label} className="flex items-center gap-4">
+                    <div className="w-32 text-sm text-muted-foreground">{bucket.label}</div>
+                    <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${bucket.color} transition-all duration-500`}
+                        style={{ width: `${clientData.length > 0 ? (bucket.count / clientData.length) * 100 : 0}%` }}
+                      />
+                    </div>
+                    <div className="w-20 text-sm font-medium text-right">{bucket.count} clients</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Trend Watch Lists */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4 text-success" />
+                  Improving Clients
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {clientData
+                    .filter(c => c.riskCategory === "Low" || c.riskScore < 40)
+                    .slice(0, 5)
+                    .map((client, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded bg-success/5 border border-success/20">
+                        <span className="text-sm font-medium">{client.name}</span>
+                        <Badge variant="success">Improving</Badge>
+                      </div>
+                    ))}
+                  {clientData.filter(c => c.riskCategory === "Low" || c.riskScore < 40).length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No improving clients</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-destructive" />
+                  Watch List
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {clientData
+                    .filter(c => c.riskCategory === "High" || c.remindersCount >= 3)
+                    .slice(0, 5)
+                    .map((client, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded bg-destructive/5 border border-destructive/20">
+                        <span className="text-sm font-medium">{client.name}</span>
+                        <Badge variant="destructive">Watch</Badge>
+                      </div>
+                    ))}
+                  {clientData.filter(c => c.riskCategory === "High" || c.remindersCount >= 3).length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-4">No clients on watch list</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Payment Pattern Insights */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Payment Pattern Insights</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-4 rounded-lg bg-muted/30 border">
+                  <p className="text-sm text-muted-foreground mb-1">Best Payment Day</p>
+                  <p className="text-lg font-semibold">Thursday</p>
+                  <p className="text-xs text-muted-foreground">32% of payments received</p>
+                </div>
+                <div className="p-4 rounded-lg bg-muted/30 border">
+                  <p className="text-sm text-muted-foreground mb-1">Payment Delay Trend</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-semibold">-2.3 days</p>
+                    <Badge variant="success" className="text-xs">Improving</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Average delay vs last quarter</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Data Connections Tab */}

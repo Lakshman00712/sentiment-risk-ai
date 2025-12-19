@@ -146,7 +146,7 @@ const DataConnection = ({ onDataLoaded, showAsCard = false, onShowCSVFormat }: D
             />
           </div>
           <Button 
-            className="w-full" 
+            className="w-full bg-gradient-to-r from-orange to-orange/80 hover:from-orange/90 hover:to-orange/70 shadow-md hover:shadow-lg transition-all duration-200 text-white font-semibold" 
             disabled={loading}
             onClick={() => document.getElementById('file-upload')?.click()}
           >
