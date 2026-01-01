@@ -3,8 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Send, User } from "lucide-react";
+import { Bot, Send, User, Loader2 } from "lucide-react";
 import { ClientData } from "@/utils/csvParser";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: "user" | "assistant";
@@ -16,6 +17,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -23,65 +25,174 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
     }
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const generateDataSummary = (): string => {
+    const highRisk = clientData.filter(c => c.riskCategory === "High");
+    const mediumRisk = clientData.filter(c => c.riskCategory === "Medium");
+    const lowRisk = clientData.filter(c => c.riskCategory === "Low");
+    
+    const totalAR = clientData.reduce((sum, c) => sum + c.invoiceAmount, 0);
+    const avgRiskScore = clientData.length > 0 
+      ? Math.round(clientData.reduce((sum, c) => sum + c.riskScore, 0) / clientData.length) 
+      : 0;
+    
+    const overdue90 = clientData.filter(c => c.daysPastDue >= 90);
+    const overdue60 = clientData.filter(c => c.daysPastDue >= 60 && c.daysPastDue < 90);
+    const overdue30 = clientData.filter(c => c.daysPastDue >= 30 && c.daysPastDue < 60);
+    
+    const highUtilization = clientData.filter(c => c.creditUtilization >= 85);
+    
+    const top5HighRisk = [...clientData]
+      .sort((a, b) => b.riskScore - a.riskScore)
+      .slice(0, 5)
+      .map(c => `${c.name} (Score: ${c.riskScore}, Days Overdue: ${c.daysPastDue}, Amount: $${c.invoiceAmount.toLocaleString()})`)
+      .join("\n  - ");
+
+    return `
+Total Clients: ${clientData.length}
+Total Accounts Receivable: $${totalAR.toLocaleString()}
+Average Risk Score: ${avgRiskScore}/100
+
+Risk Distribution:
+- High Risk: ${highRisk.length} clients ($${highRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
+- Medium Risk: ${mediumRisk.length} clients ($${mediumRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
+- Low Risk: ${lowRisk.length} clients ($${lowRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
+
+Overdue Analysis:
+- 90+ days overdue: ${overdue90.length} clients ($${overdue90.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
+- 60-89 days overdue: ${overdue60.length} clients ($${overdue60.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
+- 30-59 days overdue: ${overdue30.length} clients ($${overdue30.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
+
+Credit Utilization:
+- Clients with 85%+ utilization: ${highUtilization.length}
+
+Top 5 Highest Risk Clients:
+  - ${top5HighRisk}
+`;
+  };
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: "user", content: input };
     setMessages(prev => [...prev, userMessage]);
-    
-    // Simulate AI response based on data
-    setTimeout(() => {
-      const response = generateResponse(input, clientData);
-      setMessages(prev => [...prev, { role: "assistant", content: response }]);
-    }, 500);
-
     setInput("");
-  };
+    setIsLoading(true);
 
-  const generateResponse = (query: string, data: ClientData[]): string => {
-    const lowerQuery = query.toLowerCase();
-    
-    if (lowerQuery.includes("high risk") || lowerQuery.includes("risky")) {
-      const highRisk = data.filter(c => c.riskCategory === "High");
-      const totalAR = highRisk.reduce((sum, c) => sum + c.invoiceAmount, 0);
-      const avgScore = highRisk.length > 0 ? Math.round(highRisk.reduce((sum, c) => sum + c.riskScore, 0) / highRisk.length) : 0;
-      return `You have ${highRisk.length} high-risk clients with a total AR value of $${totalAR.toLocaleString()}. Their average risk score is ${avgScore}/100. I recommend reviewing these accounts for immediate follow-up.`;
-    }
-    
-    if (lowerQuery.includes("overdue") || lowerQuery.includes("past due") || lowerQuery.includes("days past")) {
-      const overdue90 = data.filter(c => c.daysPastDue >= 90);
-      const overdue60 = data.filter(c => c.daysPastDue >= 60 && c.daysPastDue < 90);
-      const overdue30 = data.filter(c => c.daysPastDue >= 30 && c.daysPastDue < 60);
-      return `Payment status breakdown:\n• 90+ days overdue: ${overdue90.length} clients ($${overdue90.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})\n• 60-89 days: ${overdue60.length} clients\n• 30-59 days: ${overdue30.length} clients\n\nThe 90+ days overdue accounts need immediate attention.`;
-    }
-    
-    if (lowerQuery.includes("credit") || lowerQuery.includes("utilization")) {
-      const highUtil = data.filter(c => c.creditUtilization >= 85);
-      return `${highUtil.length} clients have credit utilization above 85%, which is a significant risk factor. Their total outstanding is $${highUtil.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()}.`;
-    }
-    
-    if (lowerQuery.includes("total") || lowerQuery.includes("ar") || lowerQuery.includes("receivable")) {
-      const total = data.reduce((sum, c) => sum + c.invoiceAmount, 0);
-      const avgScore = Math.round(data.reduce((sum, c) => sum + c.riskScore, 0) / data.length);
-      return `Your total accounts receivable is $${total.toLocaleString()} across ${data.length} clients. The average risk score is ${avgScore}/100.`;
-    }
-    
-    if (lowerQuery.includes("reminder") || lowerQuery.includes("reminders")) {
-      const highReminders = data.filter(c => c.remindersCount >= 3);
-      return `${highReminders.length} clients have received 3 or more payment reminders, indicating potential payment issues. Consider escalating collection efforts for these accounts.`;
-    }
+    let assistantContent = "";
 
-    if (lowerQuery.includes("order") || lowerQuery.includes("orders") || lowerQuery.includes("frequency")) {
-      const lowOrders = data.filter(c => c.avgOrders60Days < 5);
-      return `${lowOrders.length} clients have low order frequency (less than 5 orders in 60 days), which may indicate reduced business activity or potential churn risk.`;
-    }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/credit-risk-chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            messages: [...messages, userMessage].map(m => ({
+              role: m.role,
+              content: m.content
+            })),
+            dataSummary: generateDataSummary(),
+          }),
+        }
+      );
 
-    if (lowerQuery.includes("why") && (lowerQuery.includes("risk") || lowerQuery.includes("score"))) {
-      return `Risk scores are calculated using a weighted formula:\n• Days Past Due (50%): 0-90 days normalized\n• Credit Utilization (25%): 0-85% normalized\n• Reminders Count (15%): 0-3 normalized\n• Avg Orders 60 Days (10%): Lower orders = higher risk\n\nThresholds: High Risk ≥ 65, Medium 35-64, Low < 35`;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get response");
+      }
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") {
+                  return prev.map((m, i) => 
+                    i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                  );
+                }
+                return [...prev, { role: "assistant", content: assistantContent }];
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split("\n")) {
+          if (!raw) continue;
+          if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+          if (raw.startsWith(":") || raw.trim() === "") continue;
+          if (!raw.startsWith("data: ")) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") {
+                  return prev.map((m, i) => 
+                    i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                  );
+                }
+                return [...prev, { role: "assistant", content: assistantContent }];
+              });
+            }
+          } catch { /* ignore partial leftovers */ }
+        }
+      }
+
+    } catch (error) {
+      console.error("Chat error:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to get AI response",
+        variant: "destructive",
+      });
+      // Remove the loading state but keep user message
+    } finally {
+      setIsLoading(false);
     }
-    
-    return "I can help you analyze risk patterns, overdue payments, credit utilization, and more. Try asking about high-risk clients, overdue accounts, credit utilization, or why clients have specific risk scores.";
   };
 
   return (
@@ -108,6 +219,16 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
               )}
             </div>
           ))}
+          {isLoading && messages[messages.length - 1]?.role === "user" && (
+            <div className="flex gap-3 justify-start">
+              <div className="h-8 w-8 rounded-full bg-gradient-orange flex items-center justify-center shrink-0">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+              <Card className="p-4 bg-muted/50">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </Card>
+            </div>
+          )}
         </div>
       </ScrollArea>
 
@@ -119,13 +240,14 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
             placeholder="Ask about risk scores, overdue accounts, credit utilization..."
             className="flex-1"
+            disabled={isLoading}
           />
-          <Button onClick={handleSend} disabled={!input.trim()}>
-            <Send className="h-4 w-4" />
+          <Button onClick={handleSend} disabled={!input.trim() || isLoading}>
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Press Enter to send, Shift+Enter for new line
+          Powered by AI • Press Enter to send
         </p>
       </div>
     </div>
