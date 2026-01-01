@@ -1,0 +1,4 @@
+project_id = "xnpvybxpjcvdkpxazncb"
+
+[functions.credit-risk-chat]
+verify_jwt = false
