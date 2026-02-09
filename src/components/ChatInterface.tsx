@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Send, User, Loader2 } from "lucide-react";
 import { ClientData } from "@/utils/csvParser";
+import { filterClientsForQuery } from "@/utils/clientDataFilter";
 import { useToast } from "@/hooks/use-toast";
 
 interface Message {
@@ -27,7 +28,7 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const generateDataSummary = (): string => {
+  const generateDataSummary = (userQuery: string): string => {
     const highRisk = clientData.filter(c => c.riskCategory === "High");
     const mediumRisk = clientData.filter(c => c.riskCategory === "Medium");
     const lowRisk = clientData.filter(c => c.riskCategory === "Low");
@@ -43,17 +44,17 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
     
     const highUtilization = clientData.filter(c => c.creditUtilization >= 85);
 
-    // Build individual client records for the AI
-    const clientDetails = clientData
-      .sort((a, b) => b.riskScore - a.riskScore)
+    // Smart pre-filtering: only send relevant clients based on the question
+    const { clients: filteredClients, filterDescription } = filterClientsForQuery(userQuery, clientData);
+
+    const clientDetails = filteredClients
       .map(c => 
         `ID: ${c.id} | Name: ${c.name} | Risk: ${c.riskCategory} (${c.riskScore}/100) | Invoice: $${c.invoiceAmount.toLocaleString()} | Days Overdue: ${c.daysPastDue} | Credit Used: $${c.creditUsed.toLocaleString()}/$${c.creditLimit.toLocaleString()} (${c.creditUtilization}%) | Reminders: ${c.remindersCount} | Avg Orders 60d: ${c.avgOrders60Days} | Rationale: ${c.riskRationale}`
       )
       .join("\n");
 
     return `
-## Portfolio Summary
-Total Clients: ${clientData.length}
+## Portfolio Summary (${clientData.length} total clients)
 Total Accounts Receivable: $${totalAR.toLocaleString()}
 Average Risk Score: ${avgRiskScore}/100
 
@@ -70,7 +71,8 @@ Average Risk Score: ${avgRiskScore}/100
 ## Credit Utilization
 - Clients with 85%+ utilization: ${highUtilization.length}
 
-## All Client Records (sorted by risk score, highest first)
+## Filtered Client Records
+Filter: ${filterDescription}
 ${clientDetails}
 `;
   };
@@ -99,7 +101,7 @@ ${clientDetails}
               role: m.role,
               content: m.content
             })),
-            dataSummary: generateDataSummary(),
+            dataSummary: generateDataSummary(input),
           }),
         }
       );
