@@ -42,33 +42,36 @@ const ChatInterface = ({ clientData }: ChatInterfaceProps) => {
     const overdue30 = clientData.filter(c => c.daysPastDue >= 30 && c.daysPastDue < 60);
     
     const highUtilization = clientData.filter(c => c.creditUtilization >= 85);
-    
-    const top5HighRisk = [...clientData]
+
+    // Build individual client records for the AI
+    const clientDetails = clientData
       .sort((a, b) => b.riskScore - a.riskScore)
-      .slice(0, 5)
-      .map(c => `${c.name} (Score: ${c.riskScore}, Days Overdue: ${c.daysPastDue}, Amount: $${c.invoiceAmount.toLocaleString()})`)
-      .join("\n  - ");
+      .map(c => 
+        `ID: ${c.id} | Name: ${c.name} | Risk: ${c.riskCategory} (${c.riskScore}/100) | Invoice: $${c.invoiceAmount.toLocaleString()} | Days Overdue: ${c.daysPastDue} | Credit Used: $${c.creditUsed.toLocaleString()}/$${c.creditLimit.toLocaleString()} (${c.creditUtilization}%) | Reminders: ${c.remindersCount} | Avg Orders 60d: ${c.avgOrders60Days} | Rationale: ${c.riskRationale}`
+      )
+      .join("\n");
 
     return `
+## Portfolio Summary
 Total Clients: ${clientData.length}
 Total Accounts Receivable: $${totalAR.toLocaleString()}
 Average Risk Score: ${avgRiskScore}/100
 
-Risk Distribution:
+## Risk Distribution
 - High Risk: ${highRisk.length} clients ($${highRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
 - Medium Risk: ${mediumRisk.length} clients ($${mediumRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
 - Low Risk: ${lowRisk.length} clients ($${lowRisk.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()} AR)
 
-Overdue Analysis:
+## Overdue Analysis
 - 90+ days overdue: ${overdue90.length} clients ($${overdue90.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
 - 60-89 days overdue: ${overdue60.length} clients ($${overdue60.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
 - 30-59 days overdue: ${overdue30.length} clients ($${overdue30.reduce((s, c) => s + c.invoiceAmount, 0).toLocaleString()})
 
-Credit Utilization:
+## Credit Utilization
 - Clients with 85%+ utilization: ${highUtilization.length}
 
-Top 5 Highest Risk Clients:
-  - ${top5HighRisk}
+## All Client Records (sorted by risk score, highest first)
+${clientDetails}
 `;
   };
 
